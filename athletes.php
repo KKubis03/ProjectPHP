@@ -89,6 +89,10 @@ if (isset($_POST['logout'])) {
 if (isset($_POST['refresh'])) {
     Refresh();
 }
+if (isset($_POST['back'])) {
+    header('Location: admin.php');
+    exit();
+}
 if (isset($_POST['save'])) {
     Save($_POST['athleteid'], $connection);
     Refresh();
@@ -139,6 +143,7 @@ foreach ($athletes as $a) {
         <h1 class="display-3" style="text-align: center; margin: 30px; font-weight: bold;">Sports competitions</h1>
         <form method="POST">
             <div class="btn-group" role="group" aria-label="Basic example">
+                <button name="back" class="btn btn-primary">Back</button>
                 <button name="refresh" class="btn btn-primary">Refresh</button>
                 <button name="logout" class="btn btn-primary">Logout</button>
             </div>

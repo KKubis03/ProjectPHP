@@ -1,18 +1,18 @@
 <?php
 // Start session for user authentication
-  session_start();
-  $server = "localhost";
-  $user = "root";
-  $password = "";
-  $database = 'sportCompetitions';
-  $connection = mysqli_connect($server, $user, $password, $database);
-  $error_message = '';
+session_start();
+$server = "localhost";
+$user = "root";
+$password = "";
+$database = 'sportCompetitions';
+$connection = mysqli_connect($server, $user, $password, $database);
+$error_message = '';
 if (isset($_POST['login']) && isset($_POST['password'])) {
   // database connection
   $loginOK = false;
   $login = $_POST['login'];
   $password = $_POST['password'];
-  $query = "select * from users where login = '$login'";
+  $query = "select * from users where Login = '$login'";
   $result = mysqli_query($connection, $query);
   global $user;
   $user = mysqli_fetch_assoc($result);
@@ -23,7 +23,7 @@ if (isset($_POST['login']) && isset($_POST['password'])) {
     }
   }
   if ($loginOK) {
-    if($user['UserType'] == "admin") 
+    if ($user['UserType'] == "admin")
       header("Location: admin.php");
     else
       header("Location: client.php");
@@ -60,7 +60,7 @@ if (isset($_POST['login']) && isset($_POST['password'])) {
         <label class="form-label">Password</label>
         <input type="password" required class="form-control" name="password" style="width: 300px; margin: 0 auto;">
       </div>
-      <h1 class="h4 primary text-center fw-bold mb-4 text-warning"><?=$error_message?></h1>
+      <h1 class="h4 primary text-center fw-bold mb-4 text-warning"><?= $error_message ?></h1>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">Log in</button>
       </div>
