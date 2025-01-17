@@ -40,12 +40,13 @@ function Save($athleteId, $connection)
 }
 function Insert($connection)
 {
-    $query = "insert into athletes (FirstName, Lastname, Country, Sex, City) values (
+    $query = "insert into athletes (FirstName, Lastname, Country, Sex, City, IsActive) values (
         '" . $_POST['name'] . "', 
         '" . $_POST['surname'] . "', 
         '" . $_POST['country'] . "', 
         '" . $_POST['sex'] . "', 
-        '" . $_POST['city'] . "'
+        '" . $_POST['city'] . "',
+        '" . true . "'
         );";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
@@ -62,14 +63,14 @@ function Edit($id, $connection)
 }
 function Remove($athleteId, $connection)
 {
-    $query = "delete from athletes where Id = '$athleteId'";
-    echo $query;
+    // instead of removing record from database im setting IsActive value = false
+    $query = "update athletes set IsActive = false where Id = '$athleteId'";
     mysqli_query($connection, $query) or exit("failed");
     Refresh();
 }
 
 // query to get athletes
-$query = "select * from athletes";
+$query = "select * from athletes where IsActive = true;";
 $result = mysqli_query($connection, $query);
 $athletes = mysqli_fetch_all($result, MYSQLI_ASSOC);
 $athlete = [

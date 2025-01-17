@@ -1,35 +1,28 @@
 <?php
 session_start();
 // database connection
-$server = "localhost";
-$user = "root";
-$password = "";
-$database = 'sportCompetitions';
-$connection = mysqli_connect($server, $user, $password, $database);
+$connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 
 if (isset($_SESSION['userId'])) {
     $userId = $_SESSION['userId'];
 }
 
 // query to get athletes
-$query = "select* from athletes where id = '$userId'";
-$result = mysqli_query($connection, $query);
+$result = mysqli_query($connection, "select * from athletes where id = '$userId'") or exit("Failed");
 $athlete = mysqli_fetch_assoc($result);
-$athleteId = $athlete["Id"];
+$athleteId = $athlete["Id"] ?? '';
 
 // query to get results
-$query2 = "select* from results where athleteId = '$athleteId'";
-$result2 = mysqli_query($connection, $query2);
+$result2 = mysqli_query($connection, "select* from results where athleteId = '$athleteId'");
 $results = mysqli_fetch_all($result2, MYSQLI_ASSOC); // Fetch all results
 
-// query to get competitions
-$competitionIds = array_map(function ($result) {
-    return $result["CompetitionId"]; }, $results); // Extract competition IDs from results
-$competitionIdsStr = implode(",", $competitionIds); // Create a comma-separated string of competition IDs
-$query3 = "select * from competitions where id IN ($competitionIdsStr)";
-$result3 = mysqli_query($connection, $query3);
-$competitions = mysqli_fetch_all($result3, MYSQLI_ASSOC); // Fetch all competitions
-
+// query to get competitionsId's
+$result3 = mysqli_query($connection, "select CompetitionId from results where AthleteId = '$athleteId'");
+$competitionIds = mysqli_fetch_all($result3);
+foreach ($competitionIds as $id) {
+    $result4 = mysqli_query($connection, "select * from competitions where Id = '$id';");
+    $competitions = mysqli_fetch_all($result4, MYSQLI_ASSOC);
+}
 if (isset($_POST['logout'])) {
     session_destroy();
     header('Location: main.php');

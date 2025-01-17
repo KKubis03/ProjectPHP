@@ -1,20 +1,15 @@
 <?php
 // Start session for user authentication
 session_start();
-$server = "localhost";
-$user = "root";
-$password = "";
-$database = 'sportCompetitions';
-$connection = mysqli_connect($server, $user, $password, $database);
+$_SESSION['userId'] ?? '';
+// database connection
+$connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $error_message = '';
 if (isset($_POST['login']) && isset($_POST['password'])) {
-  // database connection
   $loginOK = false;
   $login = $_POST['login'];
   $password = $_POST['password'];
-  $query = "select * from users where Login = '$login'";
-  $result = mysqli_query($connection, $query);
-  global $user;
+  $result = mysqli_query($connection, "select * from users where Login = '$login'");
   $user = mysqli_fetch_assoc($result);
   if ($user != null) {
     $_SESSION['userId'] = $user['Id'];
