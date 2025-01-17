@@ -19,9 +19,13 @@ $results = mysqli_fetch_all($result2, MYSQLI_ASSOC); // Fetch all results
 // query to get competitionsId's
 $result3 = mysqli_query($connection, "select CompetitionId from results where AthleteId = '$athleteId'");
 $competitionIds = mysqli_fetch_all($result3);
+// query to get all competitions with 
+$allCompetitions = [];
 foreach ($competitionIds as $id) {
-    $result4 = mysqli_query($connection, "select * from competitions where Id = '$id';");
-    $competitions = mysqli_fetch_all($result4, MYSQLI_ASSOC);
+    $result4 = mysqli_query($connection, "select * from competitions where Id = '$id[0]';");
+    while ($competition = mysqli_fetch_assoc($result4)) {
+        $allCompetitions[] = $competition;
+    }
 }
 if (isset($_POST['logout'])) {
     session_destroy();
@@ -90,7 +94,7 @@ if (isset($_POST['refresh'])) {
 
                     <?php
                     $row = 0;
-                    foreach ($competitions as $competition) {
+                    foreach ($allCompetitions as $competition) {
                         $row++;
                         echo "<tr>";
                         echo "<th scope='row'>$row</th>";
