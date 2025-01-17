@@ -1,20 +1,16 @@
 <?php
 session_start();
+
 // database connection
-$server = "localhost";
-$user = "root";
-$password = "";
-$database = 'sportCompetitions';
-$connection = mysqli_connect($server, $user, $password, $database);
+$connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
+$_SESSION['athleteId'] = $athleteId = $_POST['athleteid'] ?? '';
 
 // FUNCTIONS
-// Refresh function 
-function refresh()
+function Refresh()
 {
     header("Refresh:0");
     exit();
 }
-// function to fill the table
 function FillTable($athletes)
 {
     foreach ($athletes as $athlete) {
@@ -33,68 +29,49 @@ function FillTable($athletes)
         echo "</tr>";
     }
 }
-// Save function
 function Save($athleteId, $connection)
 {
-    $name = $_POST['name'];
-    $surname = $_POST['surname'];
-    $gender = $_POST['sex'];
-    $country = $_POST['country'];
-    $city = $_POST['city'];
-    $query = "select * from athletes where Id = '" . $athleteId . "';";
-    $athleteExists = mysqli_query($connection, $query);
+    $athleteExists = mysqli_query($connection, "select * from athletes where Id = '" . $athleteId . "';");
     if (mysqli_num_rows($athleteExists) == 0) {
-        $query = "insert into athletes (FirstName, Lastname, Country, Sex, City) values (
-            '" . $name . "', 
-            '" . $surname . "', 
-            '" . $country . "', 
-            '" . $gender . "', 
-            '" . $city . "'
-            );";
+        Insert($connection);
     } else {
-        $query = "update athletes set 
-            FirstName = '" . $name . "', 
-            LastName = '" . $surname . "', 
-            Country = '" . $country . "', 
-            Sex = '" . $gender . "', 
-            City = '" . $city . "' 
-            where Id = '" . $athleteId . "';";
+        Edit($athleteId, $connection);
     }
+}
+function Insert($connection)
+{
+    $query = "insert into athletes (FirstName, Lastname, Country, Sex, City) values (
+        '" . $_POST['name'] . "', 
+        '" . $_POST['surname'] . "', 
+        '" . $_POST['country'] . "', 
+        '" . $_POST['sex'] . "', 
+        '" . $_POST['city'] . "'
+        );";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
-// Remove function
-function remove($athleteId, $connection)
+function Edit($id, $connection)
+{
+    $query = "update athletes set 
+            FirstName = '" . $_POST['name'] . "', 
+            LastName = '" . $_POST['surname'] . "', 
+            Country = '" . $_POST['country'] . "', 
+            Sex = '" . $_POST['sex'] . "', 
+            City = '" . $_POST['city'] . "' 
+            where Id = '" . $id . "';";
+    mysqli_query($connection, $query) or exit("Query $query failed");
+}
+function Remove($athleteId, $connection)
 {
     $query = "delete from athletes where Id = '$athleteId'";
     echo $query;
     mysqli_query($connection, $query) or exit("failed");
-    refresh();
+    Refresh();
 }
+
 // query to get athletes
 $query = "select * from athletes";
 $result = mysqli_query($connection, $query);
 $athletes = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-// BUTTONS HANDLING
-// logout button
-if (isset($_POST['logout'])) {
-    session_destroy();
-    header('Location: main.php');
-    exit();
-}
-// refresh button handling
-if (isset($_POST['refresh'])) {
-    refresh();
-}
-// Save button handling
-if (isset($_POST['save'])) {
-    Save($athleteId, $connection);
-    refresh();
-}
-// Cancel button handling
-if (isset($_POST['cancel'])) {
-    refresh();
-}
 $athlete = [
     'Name' => $_POST['name'] ?? '',
     'Surname' => $_POST['surname'] ?? '',
@@ -102,12 +79,28 @@ $athlete = [
     'Country' => $_POST['country'] ?? '',
     'City' => $_POST['city'] ?? ''
 ];
-// edit buttons handle
-$athleteId = $_POST['athleteid'] ?? 0;
+
+// BUTTONS HANDLING
+if (isset($_POST['logout'])) {
+    session_destroy();
+    header('Location: main.php');
+    exit();
+}
+if (isset($_POST['refresh'])) {
+    Refresh();
+}
+if (isset($_POST['save'])) {
+    Save($_POST['athleteid'], $connection);
+    Refresh();
+}
+if (isset($_POST['cancel'])) {
+    Refresh();
+}
+// EDIT buttons handle
 foreach ($athletes as $item) {
     $i = $item['Id'];
     if (isset($_POST["edit$i"])) {
-        $athlete['Id'] = $item['Id'];
+        $athlete['Id'] = $i;
         $athleteId = $athlete['Id'];
         $athlete['Name'] = $item['FirstName'];
         $athlete['Surname'] = $item['LastName'];
@@ -117,12 +110,13 @@ foreach ($athletes as $item) {
         break;
     }
 }
+// REMOVE buttons handle
 foreach ($athletes as $a) {
     $i = $a['Id'];
     if (isset($_POST["delete$i"])) {
-        $athlete['Id'] = $a['Id'];
+        $athlete['Id'] = $i;
         $athleteId = $athlete['Id'];
-        remove($athleteId, $connection);
+        Remove($athleteId, $connection);
         break;
     }
 }
@@ -214,6 +208,7 @@ foreach ($athletes as $a) {
         </div>
     </div>
     </div>
+    <!-- Bootstrap scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous"></script>
