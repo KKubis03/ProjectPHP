@@ -39,9 +39,6 @@ if (isset($_POST['create']) && empty($error_message)) {
 }
 ?>
 
-
-
-
 <!doctype html>
 <html lang="en">
 

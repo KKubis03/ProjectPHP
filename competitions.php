@@ -4,7 +4,34 @@ session_start();
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $_SESSION['compId'] = $compId = $_POST['compId'] ?? '';
+// function to check if field isset and is not empty
+function IsNotEmpty($item)
+{
+    return !empty($item) ? true : false;
+}
+// Function to check if all fields of form are valid
+function IsFormValid($competition)
+{
+    if (
+        IsNotEmpty($competition[0]) &&
+        IsNotEmpty($competition[1]) && is_numeric($competition[1]) && // distance must be a number
+        IsNotEmpty($competition[2]) &&
+        IsNotEmpty($competition[3]) &&
+        IsNotEmpty($competition[4])
+    )
+        return true;
+    else
+        return false;
 
+
+}
+// function that returns table of fields ready to save in database
+function GetData()
+{
+    $competition = [];
+    array_push($competition, $_POST['name'], $_POST['distance'], $_POST['date'], $_POST['country'], $_POST['city']);
+    return $competition;
+}
 function Refresh()
 {
     header("Refresh:0");
@@ -31,33 +58,36 @@ function FillTable($competitions)
 function Save($compId, $connection)
 {
     $compExists = mysqli_query($connection, "select * from competitions where Id = '" . $compId . "';");
-    if (mysqli_num_rows($compExists) == 0) {
-        echo $compId;
-        Insert($connection);
-    } else {
-        Edit($compId, $connection);
-    }
+    $competition = GetData();
+    if (IsFormValid($competition)) {
+        if (mysqli_num_rows($compExists) == 0) {
+            Insert($connection, $competition);
+        } else {
+            Edit($compId, $connection, $competition);
+        }
+    } else
+        echo "Invalid data cannot save to database";
 }
-function Insert($connection)
+function Insert($connection, $competition)
 {
     $query = "insert into competitions (Name, Distance, Date, Country, City, IsActive) values (
-        '" . $_POST['name'] . "', 
-        '" . $_POST['distance'] . "', 
-        '" . $_POST['date'] . "', 
-        '" . $_POST['country'] . "', 
-        '" . $_POST['city'] . "',
+        '" . $competition[0] . "', 
+        '" . $competition[1] . "', 
+        '" . $competition[2] . "', 
+        '" . $competition[3] . "', 
+        '" . $competition[4] . "',
         '" . true . "'
         );";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
-function Edit($id, $connection)
+function Edit($id, $connection, $competition)
 {
     $query = "update competitions set 
-            Name = '" . $_POST['name'] . "', 
-            Distance = '" . $_POST['distance'] . "', 
-            Date = '" . $_POST['date'] . "', 
-            Country = '" . $_POST['country'] . "', 
-            City = '" . $_POST['city'] . "' 
+            Name = '" . $competition[0] . "', 
+            Distance = '" . $competition[1] . "', 
+            Date = '" . $competition[2] . "', 
+            Country = '" . $competition[3] . "', 
+            City = '" . $competition[4] . "' 
             where Id = '" . $id . "';";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
@@ -156,26 +186,25 @@ foreach ($competitions as $c) {
                         <input type="hidden" name="compId" value="<?= $compId ?>">
                         <!-- hidden form to store Id -->
                         <label class="form-label">Name:</label>
-                        <input type="text" class="form-control" name="name" required value="<?= $comp['Name'] ?>">
+                        <input type="text" class="form-control" name="name" value="<?= $comp['Name'] ?>">
                     </div>
                     <div class="col mb-3">
                         <label class="form-label">Distance:</label>
-                        <input type="text" class="form-control" name="distance" required
-                            value="<?= $comp['Distance'] ?>">
+                        <input type="text" class="form-control" name="distance" value="<?= $comp['Distance'] ?>">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label mb-3">Date:</label><br>
-                        <input type="date" name="date" class="mx-2" required value="<?= $comp['Date'] ?>">
+                        <label class="form-label">Date:</label><br>
+                        <input type="date" name="date" class="form-control" value="<?= $comp['Date'] ?>">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col mb-3">
                         <label class="form-label">Country:</label>
-                        <input type="text" class="form-control" name="country" required value="<?= $comp['Country'] ?>">
+                        <input type="text" class="form-control" name="country" value="<?= $comp['Country'] ?>">
                     </div>
                     <div class="col mb-3">
                         <label class="form-label">City:</label>
-                        <input type="text" class="form-control" name="city" required value="<?= $comp['City'] ?>">
+                        <input type="text" class="form-control" name="city" value="<?= $comp['City'] ?>">
                     </div>
                 </div>
                 <div class="row">
