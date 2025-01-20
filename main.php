@@ -1,24 +1,31 @@
 <?php
 // Start session for user authentication
 session_start();
-$_SESSION['userId'] ?? '';
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
+$file = fopen('users.csv', 'r');
+// Function to find user in csv File
+function FindUser($login, $file)
+{
+  while ($row = fgetcsv($file, 0, ";")) {
+    if ($row[0] == $login) {
+      return $row;
+    }
+  }
+}
 $error_message = '';
 if (isset($_POST['login']) && isset($_POST['password'])) {
   $loginOK = false;
   $login = $_POST['login'];
   $password = $_POST['password'];
-  $result = mysqli_query($connection, "select * from users where Login = '$login'");
-  $user = mysqli_fetch_assoc($result);
+  $user = FindUser($login, $file);
   if ($user != null) {
-    $_SESSION['userId'] = $user['Id'];
-    if ($user['Login'] == $login && $user['Password'] == $password) {
+    if ($user[0] == $login && password_verify($password, $user[1])) {
       $loginOK = true;
     }
   }
   if ($loginOK) {
-    if ($user['UserType'] == "admin")
+    if ($user[2] == "admin")
       header("Location: admin.php");
     else
       header("Location: client.php");
@@ -26,6 +33,10 @@ if (isset($_POST['login']) && isset($_POST['password'])) {
   } else {
     $error_message = "Login or password is incorrect.";
   }
+}
+if (isset($_POST['register'])) {
+  header("Location: registration.php");
+  exit;
 }
 
 
@@ -49,15 +60,16 @@ if (isset($_POST['login']) && isset($_POST['password'])) {
     <form method="POST" class="text-center">
       <div class="mb-3">
         <label class="form-label">Login</label>
-        <input class="form-control" required name="login" style="width: 300px; margin: 0 auto;">
+        <input class="form-control" name="login" style="width: 300px; margin: 0 auto;">
       </div>
       <div class="mb-3">
         <label class="form-label">Password</label>
-        <input type="password" required class="form-control" name="password" style="width: 300px; margin: 0 auto;">
+        <input type="password" class="form-control" name="password" style="width: 300px; margin: 0 auto;">
       </div>
       <h1 class="h4 primary text-center fw-bold mb-4 text-warning"><?= $error_message ?></h1>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">Log in</button>
+        <button name="register" class="btn btn-outline-primary">Register</button>
       </div>
     </form>
   </div>

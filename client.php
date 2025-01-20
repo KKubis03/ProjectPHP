@@ -2,16 +2,15 @@
 session_start();
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
-
-if (isset($_SESSION['userId'])) {
-    $userId = $_SESSION['userId'];
-}
-
-// query to get athletes
+// query to get all athletes
+$result = mysqli_query($connection, "select * from athletes") or exit("Failed");
+$athletes = mysqli_fetch_all($result);
+$_SESSION['athleteId'] = $_POST['athlete'] ?? '';
+$userId = $_SESSION['athleteId'];
+// query to get athlete
 $result = mysqli_query($connection, "select * from athletes where id = '$userId'") or exit("Failed");
 $athlete = mysqli_fetch_assoc($result);
 $athleteId = $athlete["Id"] ?? '';
-
 // query to get results
 $result2 = mysqli_query($connection, "select* from results where athleteId = '$athleteId'");
 $results = mysqli_fetch_all($result2, MYSQLI_ASSOC); // Fetch all results
@@ -27,6 +26,7 @@ foreach ($competitionIds as $id) {
         $allCompetitions[] = $competition;
     }
 }
+
 if (isset($_POST['logout'])) {
     session_destroy();
     header('Location: main.php');
@@ -58,20 +58,30 @@ if (isset($_POST['refresh'])) {
         <!-- Header -->
         <h1 class="display-3 text-center fw-bold mb-4">Sports Competitions</h1>
         <form method="POST">
-            <div class="btn-group" role="group" aria-label="Basic example">
+            <div class="btn-group mb-2" role="group" style="width: 200px;">
                 <button name="refresh" class="btn btn-primary">Refresh</button>
                 <button name="logout" class="btn btn-primary">Logout</button>
             </div>
+            <select class="form-select mb-2" name="athlete">
+                <option>Select athlete</option>
+                <?php
+                print_r($athletes);
+                foreach ($athletes as $a) {
+                    echo '<option value="' . $a[0] . '">' . $a[1] . ' ' . $a[2] . '</option>';
+                }
+                ?>
+            </select>
+            <button class="btn btn-outline-info" type="submit" style="width: 200px;">Show info</button>
         </form>
         <!-- Personal Details -->
         <div class="w-100 mb-5 align-items-center">
             <h2 class="text-center mb-3">Personal Details</h2>
             <div class="container text-center">
-                <p class="fw-bold">Name: <?= $athlete['FirstName'] ?></p>
-                <p class="fw-bold">Surname: <?= $athlete['LastName'] ?></p>
-                <p class="fw-bold">Gender: <?= $athlete['Sex'] ?></p>
-                <p class="fw-bold">Country: <?= $athlete['Country'] ?></p>
-                <p class="fw-bold">City: <?= $athlete['City'] ?></p>
+                <p class="fw-bold">Name: <?= $athlete['FirstName'] ?? '' ?></p>
+                <p class="fw-bold">Surname: <?= $athlete['LastName'] ?? '' ?></p>
+                <p class="fw-bold">Gender: <?= $athlete['Sex'] ?? '' ?></p>
+                <p class="fw-bold">Country: <?= $athlete['Country'] ?? '' ?></p>
+                <p class="fw-bold">City: <?= $athlete['City'] ?? '' ?></p>
             </div>
         </div>
         <!-- Competitions -->
@@ -93,26 +103,28 @@ if (isset($_POST['refresh'])) {
 
 
                     <?php
-                    $row = 0;
-                    foreach ($allCompetitions as $competition) {
-                        $row++;
-                        echo "<tr>";
-                        echo "<th scope='row'>$row</th>";
-                        echo "<td>" . $competition['Name'] . "</td>";
-                        echo "<td>" . $competition['Distance'] . " m</td>";
-                        echo "<td>" . $competition['Date'] . "</td>";
-                        echo "<td>" . $competition['Country'] . "</td>";
-                        echo "<td>" . $competition['City'] . "</td>";
-                        $competitionId = $competition['Id'];
-                        $time = null;
-                        foreach ($results as $result) {
-                            if ($result['CompetitionId'] == $competitionId) {
-                                $time = $result['Time'];
-                                break;
+                    if (isset($_POST['athlete'])) {
+                        $row = 0;
+                        foreach ($allCompetitions as $competition) {
+                            $row++;
+                            echo "<tr>";
+                            echo "<th scope='row'>$row</th>";
+                            echo "<td>" . $competition['Name'] . "</td>";
+                            echo "<td>" . $competition['Distance'] . " m</td>";
+                            echo "<td>" . $competition['Date'] . "</td>";
+                            echo "<td>" . $competition['Country'] . "</td>";
+                            echo "<td>" . $competition['City'] . "</td>";
+                            $competitionId = $competition['Id'];
+                            $time = null;
+                            foreach ($results as $result) {
+                                if ($result['CompetitionId'] == $competitionId) {
+                                    $time = $result['Time'];
+                                    break;
+                                }
                             }
+                            echo "<td>" . $time . "</td>";
+                            echo "</tr>";
                         }
-                        echo "<td>" . $time . "</td>";
-                        echo "</tr>";
                     }
                     ?>
 
