@@ -16,6 +16,9 @@ if (isset($_POST['athletes'])) {
 if (isset($_POST['competitions'])) {
     header('Location: competitions.php');
 }
+if (isset($_POST['results'])) {
+    header('Location: results.php');
+}
 ?>
 
 <!doctype html>
@@ -60,7 +63,7 @@ if (isset($_POST['competitions'])) {
                         <button name="competitions" class="btn btn-primary btn-lg">Competitions</button>
                     </div>
                     <div class="col-4">
-                        <button type="button" class="btn btn-primary btn-lg">Results</button>
+                        <button name="results" class="btn btn-primary btn-lg">Results</button>
                     </div>
                 </div>
             </form>

@@ -3,81 +3,72 @@ session_start();
 
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
-$_SESSION['compId'] = $compId = $_POST['compId'] ?? '';
+$_SESSION['resultId'] = $resultId = $_POST['resultId'] ?? '';
 
 function Refresh()
 {
     header("Refresh:0");
     exit();
 }
-function FillTable($competitions)
+function FillTable($results)
 {
-    foreach ($competitions as $comp) {
+    foreach ($results as $res) {
         echo "<tr>";
-        echo "<td>" . $comp['Id'] . "</td>";
-        echo "<td>" . $comp['Name'] . "</td>";
-        echo "<td>" . $comp['Distance'] . "</td>";
-        echo "<td>" . $comp['Date'] . "</td>";
-        echo "<td>" . $comp['Country'] . "</td>";
-        echo "<td>" . $comp['City'] . "</td>";
-        echo '<td> <div class="btn-group"><button class="btn btn-outline-primary btn-sm" name="edit' . $comp['Id']
+        echo "<td>" . $res['Id'] . "</td>";
+        echo "<td>" . $res['CompetitionId'] . "</td>";
+        echo "<td>" . $res['AthleteId'] . "</td>";
+        echo "<td>" . $res['Time'] . "</td>";
+        echo '<td> <div class="btn-group"><button class="btn btn-outline-primary btn-sm" name="edit' . $res['Id']
             . '"><span class="material-symbols-outlined" style="font-size:20px;">edit</span></button>'
-            . '<button class="btn btn-outline-danger btn-sm" name="delete' . $comp['Id']
+            . '<button class="btn btn-outline-danger btn-sm" name="delete' . $res['Id']
             . '"><span class="material-symbols-outlined" style="font-size:20px;">delete</span></button></div>' . '</td>'
         ;
         echo "</tr>";
     }
 }
-function Save($compId, $connection)
+function Save($resultId, $connection)
 {
-    $compExists = mysqli_query($connection, "select * from competitions where Id = '" . $compId . "';");
-    if (mysqli_num_rows($compExists) == 0) {
-        echo $compId;
+    $resultExists = mysqli_query($connection, "select * from results where Id = '" . $resultId . "';");
+    if (mysqli_num_rows($resultExists) == 0) {
         Insert($connection);
     } else {
-        Edit($compId, $connection);
+        Edit($resultId, $connection);
     }
 }
 function Insert($connection)
 {
-    $query = "insert into competitions (Name, Distance, Date, Country, City, IsActive) values (
-        '" . $_POST['name'] . "', 
-        '" . $_POST['distance'] . "', 
-        '" . $_POST['date'] . "', 
-        '" . $_POST['country'] . "', 
-        '" . $_POST['city'] . "',
+    $query = "insert into results (CompetitionId, AthleteId, Time, IsActive) values (
+        '" . $_POST['competitionId'] . "', 
+        '" . $_POST['athleteId'] . "', 
+        '" . $_POST['time'] . "', 
         '" . true . "'
         );";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
 function Edit($id, $connection)
 {
-    $query = "update competitions set 
-            Name = '" . $_POST['name'] . "', 
-            Distance = '" . $_POST['distance'] . "', 
-            Date = '" . $_POST['date'] . "', 
-            Country = '" . $_POST['country'] . "', 
-            City = '" . $_POST['city'] . "' 
-            where Id = '" . $id . "';";
+    $query = "update results set 
+    CompetitionId = '" . $_POST['competitionId'] . "', 
+    AthleteId = '" . $_POST['athleteId'] . "', 
+    Time = '" . $_POST['time'] . "'
+    where Id = '" . $id . "';";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
-function Remove($compId, $connection)
+function Remove($resultId, $connection)
 {
     // instead of removing record from database im setting IsActive value = false
-    $query = "update competitions set IsActive = false where Id = '$compId'";
+    $query = "update results set IsActive = false where Id = '$resultId'";
     mysqli_query($connection, $query) or exit("failed");
     Refresh();
 }
-// query to get competitions
-$query = "select * from competitions where IsActive = true;";
+// query to get results
+$query = "select * from results where IsActive = true;";
 $result = mysqli_query($connection, $query);
-$competitions = mysqli_fetch_all($result, MYSQLI_ASSOC);
-$comp = [
-    'Name' => $_POST['name'] ?? '',
-    'Distance' => $_POST['distance'] ?? '',
-    'Date' => $_POST['date'] ?? '',
-    'Country' => $_POST['country'] ?? '',
-    'City' => $_POST['city'] ?? ''
+$results = mysqli_fetch_all($result, MYSQLI_ASSOC);
+$res = [
+    'CompetitionId' => $_POST['competitionId'] ?? '',
+    'AthleteId' => $_POST['athleteId'] ?? '',
+    'Time' => $_POST['time'] ?? '',
 ];
 // BUTTONS HANDLING
 if (isset($_POST['logout'])) {
@@ -93,39 +84,35 @@ if (isset($_POST['back'])) {
     exit();
 }
 if (isset($_POST['save'])) {
-    Save($_POST['compId'], $connection);
+    Save($_POST['resultId'], $connection);
     Refresh();
 }
 if (isset($_POST['cancel'])) {
     Refresh();
 }
 // EDIT buttons handle
-foreach ($competitions as $item) {
+foreach ($results as $item) {
     $i = $item['Id'];
     if (isset($_POST["edit$i"])) {
-        $comp['Id'] = $i;
-        $compId = $comp['Id'];
-        $comp['Name'] = $item['Name'];
-        $comp['Distance'] = $item['Distance'];
-        $comp['Date'] = $item['Date'];
-        $comp['Country'] = $item['Country'];
-        $comp['City'] = $item['City'];
+        $res['Id'] = $i;
+        $resultId = $res['Id'];
+        $res['CompetitionId'] = $item['CompetitionId'];
+        $res['AthleteId'] = $item['AthleteId'];
+        $res['Time'] = $item['Time'];
         break;
     }
 }
 // REMOVE buttons handle
-foreach ($competitions as $c) {
-    $i = $c['Id'];
+foreach ($results as $r) {
+    $i = $r['Id'];
     if (isset($_POST["delete$i"])) {
-        $comp['Id'] = $i;
-        $competitionId = $comp['Id'];
-        Remove($competitionId, $connection);
+        $res['Id'] = $i;
+        $resultId = $res['Id'];
+        Remove($resultId, $connection);
         break;
     }
 }
 ?>
-
-
 <!doctype html>
 <html lang="en">
 
@@ -153,29 +140,20 @@ foreach ($competitions as $c) {
             <form method="POST">
                 <div class="row">
                     <div class="col mb-3">
-                        <input type="test" name="compId" value="<?= $compId ?>">
+                        <input type="hidden" name="resultId" value="<?= $resultId ?>">
                         <!-- hidden form to store Id -->
-                        <label class="form-label">Name:</label>
-                        <input type="text" class="form-control" name="name" required value="<?= $comp['Name'] ?>">
+                        <label class="form-label">Competition:</label>
+                        <input type="text" class="form-control" name="competitionId" required
+                            value="<?= $res['CompetitionId'] ?>">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">Distance:</label>
-                        <input type="text" class="form-control" name="distance" required
-                            value="<?= $comp['Distance'] ?>">
+                        <label class="form-label">Athlete:</label>
+                        <input type="text" class="form-control" name="athleteId" required
+                            value="<?= $res['AthleteId'] ?>">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label mb-3">Date:</label><br>
-                        <input type="date" name="date" class="mx-2" required value="<?= $comp['Date'] ?>">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col mb-3">
-                        <label class="form-label">Country:</label>
-                        <input type="text" class="form-control" name="country" required value="<?= $comp['Country'] ?>">
-                    </div>
-                    <div class="col mb-3">
-                        <label class="form-label">City:</label>
-                        <input type="text" class="form-control" name="city" required value="<?= $comp['City'] ?>">
+                        <label class="form-label mb-3">Time:</label><br>
+                        <input type="time" step="1" name="time" class="mx-2" required value="<?= $res['Time'] ?>">
                     </div>
                 </div>
                 <div class="row">
@@ -194,17 +172,15 @@ foreach ($competitions as $c) {
                     <thead class="table-dark">
                         <tr>
                             <th scope="col">Id</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Distance</th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Country</th>
-                            <th scope="col">City</th>
+                            <th scope="col">Competition</th>
+                            <th scope="col">Athlete</th>
+                            <th scope="col">Time</th>
                             <th scope="col"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Filling table with records -->
-                        <?php FillTable($competitions); ?>
+                        <?php FillTable($results); ?>
                     </tbody>
                 </table>
             </form>
