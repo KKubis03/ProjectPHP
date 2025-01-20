@@ -153,7 +153,7 @@ foreach ($competitions as $c) {
             <form method="POST">
                 <div class="row">
                     <div class="col mb-3">
-                        <input type="test" name="compId" value="<?= $compId ?>">
+                        <input type="hidden" name="compId" value="<?= $compId ?>">
                         <!-- hidden form to store Id -->
                         <label class="form-label">Name:</label>
                         <input type="text" class="form-control" name="name" required value="<?= $comp['Name'] ?>">
