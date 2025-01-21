@@ -98,6 +98,40 @@ function Remove($compId, $connection)
     mysqli_query($connection, $query) or exit("failed");
     Refresh();
 }
+function SortBy($key, &$table)
+{
+    switch ($key) {
+        case "Name": {
+            $Names = array_column($table, 'Name');
+            array_multisort($Names, SORT_ASC, $table);
+        }
+            break;
+        case "Distance": {
+            $Distances = array_column($table, 'Distance');
+            array_multisort($Distances, SORT_ASC, $table);
+        }
+            break;
+        case "Date": {
+            $Dates = array_column($table, 'Date');
+            array_multisort($Dates, SORT_ASC, $table);
+        }
+            break;
+        case "Country": {
+            $Countries = array_column($table, 'Country');
+            array_multisort($Countries, SORT_ASC, $table);
+        }
+            break;
+        case "City": {
+            $Cities = array_column($table, 'City');
+            array_multisort($Cities, SORT_ASC, $table);
+        }
+            break;
+        default: {
+            $Ids = array_column($table, 'Id');
+            array_multisort($Ids, SORT_ASC, $table);
+        }
+    }
+}
 // query to get competitions
 $query = "select * from competitions where IsActive = true;";
 $result = mysqli_query($connection, $query);
@@ -122,6 +156,13 @@ if (isset($_POST['save'])) {
 }
 if (isset($_POST['cancel'])) {
     Refresh();
+}
+$currentSort = $_POST['sortby'] ?? ''; // value of sortedBy
+if (isset($_POST['sort'])) {
+    if (isset($_POST['sortby'])) {
+        $currentSort = $_POST['sortby'];
+        SortBy($_POST['sortby'], $competitions);
+    }
 }
 // EDIT buttons handle
 foreach ($competitions as $item) {
@@ -222,7 +263,23 @@ foreach ($competitions as $c) {
                             <th scope="col">Date</th>
                             <th scope="col">Country</th>
                             <th scope="col">City</th>
-                            <th scope="col"></th>
+                            <th scope="col">
+                                <div class="input-group text-align-center">
+                                    <select name="sortby" class="form-select form-select-sm" style="width:10px;">
+                                        <?php
+                                        $keys = array_keys($competitions[0]);
+                                        foreach ($keys as $key) {
+                                            if ($key != 'IsActive') {
+                                                $selected = $currentSort === $key ? 'selected' : '';
+                                                echo '<option value="' . $key . '" ' . $selected . '>' . $key . '</option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                    <button type='submit' class="btn  btn-primary btn-sm " name="sort">Sort</button>
+                                </div>
+
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
