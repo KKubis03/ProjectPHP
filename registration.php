@@ -37,6 +37,10 @@ if (isset($_POST['create']) && empty($error_message)) {
     header("Location: main.php");
     exit;
 }
+if (isset($_POST['log'])) {
+    header("Location: main.php");
+    exit;
+}
 ?>
 
 <!doctype html>
@@ -66,6 +70,7 @@ if (isset($_POST['create']) && empty($error_message)) {
             </div>
             <h1 class="h4 primary text-center fw-bold mb-4 text-warning"><?= $error_message ?></h1>
             <div class="mb-3">
+                <button name="log" class="btn btn-outline-secondary">Back to Log in</button>
                 <button name="create" class="btn btn-outline-primary">Create Account</button>
             </div>
         </form>
