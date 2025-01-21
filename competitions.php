@@ -4,20 +4,15 @@ session_start();
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $_SESSION['compId'] = $compId = $_POST['compId'] ?? '';
-// function to check if field isset and is not empty
-function IsNotEmpty($item)
-{
-    return !empty($item) ? true : false;
-}
 // Function to check if all fields of form are valid
 function IsFormValid($competition)
 {
     if (
-        IsNotEmpty($competition[0]) &&
-        IsNotEmpty($competition[1]) && is_numeric($competition[1]) && // distance must be a number
-        IsNotEmpty($competition[2]) &&
-        IsNotEmpty($competition[3]) &&
-        IsNotEmpty($competition[4])
+        !empty($competition[0]) && !is_numeric($competition[0]) && // name should not be a number 
+        !empty($competition[1]) && is_numeric($competition[1]) && $competition[1] > 0 && // distance must be a number and > 0
+        !empty($competition[2]) &&
+        !empty($competition[3]) && !is_numeric($competition[3]) && // country should not be a number 
+        !empty($competition[4]) && !is_numeric($competition[4]) // city should not be a number 
     )
         return true;
     else
