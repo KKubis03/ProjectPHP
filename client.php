@@ -128,7 +128,8 @@ $currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
 <body>
     <div class="container d-flex flex-column align-items-center vh-100 py-4">
         <!-- Header -->
-        <h1 class="display-3 text-center fw-bold mb-4">Sports Competitions</h1>
+        <h1 class="display-3 text-center fw-bold mb-4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Sports
+            Competitions</h1>
         <form method="POST">
             <div class="btn-group mb-2" role="group" style="width: 200px;">
                 <button name="refresh" class="btn btn-primary">Refresh</button>
@@ -144,11 +145,11 @@ $currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
                 }
                 ?>
             </select>
-            <button type="submit" class="btn btn-outline-info" name="show" style="width: 200px;">Show info</button>
+            <button type="submit" class="btn btn-outline-info mb-2" name="show" style="width: 200px;">Show info</button>
         </form>
         <!-- Personal Details -->
         <div class="w-100 mb-5 align-items-center">
-            <h2 class="text-center mb-3">Personal Details</h2>
+            <h2 class="text-center mb-3" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Personal Details</h2>
             <div class="container text-center">
                 <p class="fw-bold">Name: <?= $athlete['FirstName'] ?? '' ?></p>
                 <p class="fw-bold">Surname: <?= $athlete['LastName'] ?? '' ?></p>
@@ -160,7 +161,7 @@ $currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
         <!-- Competitions -->
         <div class="w-100">
             <form method="POST">
-                <h2 class="text-center mb-3">Competitions</h2>
+                <h2 class="text-center mb-3" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Competitions</h2>
                 <table class="table table-bordered text-center">
                     <thead class="table-dark">
                         <tr>
@@ -205,7 +206,7 @@ $currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
         </div>
         <!-- Progress -->
         <div class="w-100">
-            <h2 class="text-center mb-3">Progress bar</h2>
+            <h2 class="text-center mb-3" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Progress bar</h2>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

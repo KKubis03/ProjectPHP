@@ -55,8 +55,9 @@ if (isset($_POST['register'])) {
 
 <body>
   <div class="container d-flex flex-column justify-content-top align-items-center vh-100">
-    <h1 class="display-3 text-center fw-bold mb-4">Sports competitions</h1>
-    <h1 class="display-3 text-center fw-bold mb-4">Log in</h1>
+    <h1 class="display-3 text-center fw-bold mb-4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Sports
+      competitions</h1>
+    <h1 class="display-3 text-center fw-bold mb-4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Log in</h1>
     <form method="POST" class="text-center">
       <div class="mb-3">
         <label class="form-label">Login</label>
@@ -69,7 +70,7 @@ if (isset($_POST['register'])) {
       <h1 class="h4 primary text-center fw-bold mb-4 text-warning"><?= $error_message ?></h1>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">Log in</button>
-        <button name="register" class="btn btn-outline-primary">Register</button>
+        <button name="register" class="btn btn-outline-secondary">Register</button>
       </div>
     </form>
   </div>

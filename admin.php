@@ -35,7 +35,9 @@ if (isset($_POST['results'])) {
 
 <body>
     <div class="container d-flex flex-column align-items-center">
-        <h1 class="display-3" style="text-align: center; margin: 30px; font-weight: bold;">Sports competitions</h1>
+        <h1 class="display-3"
+            style="text-align: center; margin: 30px; font-weight: bold;   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">
+            Sports competitions</h1>
         <form method="POST">
             <div class="btn-group" role="group" aria-label="Basic example">
                 <button name="refresh" class="btn btn-primary">Refresh</button>
@@ -45,13 +47,16 @@ if (isset($_POST['results'])) {
         <div class="container-fluid" style="text-align: center; margin:auto">
             <div class="row">
                 <div class="col-4">
-                    <span class="material-symbols-outlined" style="font-size:200px;">sprint</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size:200px;  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">sprint</span>
                 </div>
                 <div class="col-4">
-                    <span class="material-symbols-outlined" style="font-size:200px;">emoji_events</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size:200px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">emoji_events</span>
                 </div>
                 <div class="col-4">
-                    <span class="material-symbols-outlined" style="font-size:200px;">scoreboard</span>
+                    <span class="material-symbols-outlined"
+                        style="font-size:200px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">scoreboard</span>
                 </div>
             </div>
             <form method="POST">

@@ -207,7 +207,9 @@ foreach ($athletes as $a) {
 
 <body>
     <div class="container d-flex flex-column align-items-center">
-        <h1 class="display-3" style="text-align: center; margin: 30px; font-weight: bold;">Sports competitions</h1>
+        <h1 class="display-3"
+            style="text-align: center; margin: 30px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">
+            Sports competitions</h1>
         <form method="POST">
             <div class="btn-group" role="group" aria-label="Basic example">
                 <button name="back" class="btn btn-primary">Back</button>

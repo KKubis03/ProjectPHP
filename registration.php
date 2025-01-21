@@ -58,8 +58,10 @@ if (isset($_POST['log'])) {
 
 <body>
     <div class="container d-flex flex-column justify-content-top align-items-center vh-100">
-        <h1 class="display-3 text-center fw-bold mb-4">Welcome to Sports competitions</h1>
-        <h1 class="display-3 text-center fw-bold mb-4">Create Account</h1>
+        <h1 class="display-3 text-center fw-bold mb-4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Welcome to
+            Sports competitions</h1>
+        <h1 class="display-3 text-center fw-bold mb-4" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Create
+            Account</h1>
         <form method="POST" class="text-center">
             <div class="mb-3">
                 <label class="form-label">Login</label>
