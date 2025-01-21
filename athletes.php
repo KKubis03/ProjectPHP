@@ -6,6 +6,31 @@ $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $_SESSION['athleteId'] = $athleteId = $_POST['athleteid'] ?? '';
 
 // FUNCTIONS
+function GetData()
+{
+    $athlete = [
+        'Name' => $_POST['name'] ?? '',
+        'Surname' => $_POST['surname'] ?? '',
+        'Gender' => $_POST['sex'] ?? '',
+        'Country' => $_POST['country'] ?? '',
+        'City' => $_POST['city'] ?? ''
+    ];
+    return $athlete;
+}
+// Function to check if all fields of form are valid
+function IsFormValid($athlete)
+{
+    if (
+        !empty($athlete['Name']) && !is_numeric($athlete['Name']) && // name should not be a number 
+        !empty($athlete['Surname']) && !is_numeric($athlete['Surname']) && // surname should not be anuber
+        !empty($athlete['Gender']) &&
+        !empty($athlete['Country']) && !is_numeric($athlete['Country']) && // country should not be a number 
+        !empty($athlete['City']) && !is_numeric($athlete['City']) // city should not be a number 
+    )
+        return true;
+    else
+        return false;
+}
 function Refresh()
 {
     header("Refresh:0");
@@ -32,32 +57,37 @@ function FillTable($athletes)
 function Save($athleteId, $connection)
 {
     $athleteExists = mysqli_query($connection, "select * from athletes where Id = '" . $athleteId . "';");
-    if (mysqli_num_rows($athleteExists) == 0) {
-        Insert($connection);
-    } else {
-        Edit($athleteId, $connection);
-    }
+    $athlete = GetData();
+    if (IsFormValid($athlete)) {
+        if (mysqli_num_rows($athleteExists) == 0) {
+            Insert($connection, $athlete);
+        } else {
+            Edit($athleteId, $connection, $athlete);
+        }
+    } else
+        echo "Invalid data cannot save to database";
+
 }
-function Insert($connection)
+function Insert($connection, $athlete)
 {
     $query = "insert into athletes (FirstName, Lastname, Country, Sex, City, IsActive) values (
-        '" . $_POST['name'] . "', 
-        '" . $_POST['surname'] . "', 
-        '" . $_POST['country'] . "', 
-        '" . $_POST['sex'] . "', 
-        '" . $_POST['city'] . "',
+        '" . $athlete['Name'] . "', 
+        '" . $athlete['Surname'] . "', 
+        '" . $athlete['Country'] . "', 
+        '" . $athlete['Gender'] . "', 
+        '" . $athlete['City'] . "',
         '" . true . "'
         );";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
-function Edit($id, $connection)
+function Edit($id, $connection, $athlete)
 {
     $query = "update athletes set 
-            FirstName = '" . $_POST['name'] . "', 
-            LastName = '" . $_POST['surname'] . "', 
-            Country = '" . $_POST['country'] . "', 
-            Sex = '" . $_POST['sex'] . "', 
-            City = '" . $_POST['city'] . "' 
+            FirstName = '" . $athlete['Name'] . "', 
+            LastName = '" . $athlete['Surname'] . "', 
+            Country = '" . $athlete['Country'] . "', 
+            Sex = '" . $athlete['Gender'] . "', 
+            City = '" . $athlete['City'] . "' 
             where Id = '" . $id . "';";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
@@ -73,13 +103,7 @@ function Remove($athleteId, $connection)
 $query = "select * from athletes where IsActive = true;";
 $result = mysqli_query($connection, $query);
 $athletes = mysqli_fetch_all($result, MYSQLI_ASSOC);
-$athlete = [
-    'Name' => $_POST['name'] ?? '',
-    'Surname' => $_POST['surname'] ?? '',
-    'Gender' => $_POST['gender'] ?? '',
-    'Country' => $_POST['country'] ?? '',
-    'City' => $_POST['city'] ?? ''
-];
+$athlete = GetData();
 
 // BUTTONS HANDLING
 if (isset($_POST['logout'])) {
@@ -157,28 +181,26 @@ foreach ($athletes as $a) {
                         <input type="hidden" name="athleteid" value="<?= $athleteId ?>">
                         <!-- hidden form to store Id -->
                         <label class="form-label">Name:</label>
-                        <input type="text" class="form-control" name="name" required value="<?= $athlete['Name'] ?>">
+                        <input type="text" class="form-control" name="name" value="<?= $athlete['Name'] ?>">
                     </div>
                     <div class="col mb-3">
                         <label class="form-label">Surname:</label>
-                        <input type="text" class="form-control" name="surname" required
-                            value="<?= $athlete['Surname'] ?>">
+                        <input type="text" class="form-control" name="surname" value="<?= $athlete['Surname'] ?>">
                     </div>
                     <div class="col mb-3">
                         <label class="form-label mb-3">Gender:</label><br>
-                        <input type="radio" name="sex" class="mx-2" required value="Male" <?= $athlete['Gender'] == 'Male' ? 'checked' : '' ?>>Male
+                        <input type="radio" name="sex" class="mx-2" value="Male" <?= $athlete['Gender'] == 'Male' ? 'checked' : '' ?>>Male
                         <input type="radio" name="sex" class="mx-2" value="Female" <?= $athlete['Gender'] == 'Female' ? 'checked' : '' ?>>Female
                     </div>
                 </div>
                 <div class="row">
                     <div class="col mb-3">
                         <label class="form-label">Country:</label>
-                        <input type="text" class="form-control" name="country" required
-                            value="<?= $athlete['Country'] ?>">
+                        <input type="text" class="form-control" name="country" value="<?= $athlete['Country'] ?>">
                     </div>
                     <div class="col mb-3">
                         <label class="form-label">City:</label>
-                        <input type="text" class="form-control" name="city" required value="<?= $athlete['City'] ?>">
+                        <input type="text" class="form-control" name="city" value="<?= $athlete['City'] ?>">
                     </div>
                 </div>
                 <div class="row">
