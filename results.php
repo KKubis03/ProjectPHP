@@ -30,6 +30,31 @@ function Refresh()
     header("Refresh:0");
     exit();
 }
+// function to sort table
+function SortBy($key, &$table)
+{
+    switch ($key) {
+        case "CompetitionId": {
+            $CIds = array_column($table, 'CompetitionId');
+            array_multisort($CIds, SORT_ASC, $table);
+        }
+            break;
+        case "AthleteId": {
+            $AIds = array_column($table, 'AthleteId');
+            array_multisort($AIds, SORT_ASC, $table);
+        }
+            break;
+        case "Time": {
+            $Times = array_column($table, 'Time');
+            array_multisort($Times, SORT_ASC, $table);
+        }
+            break;
+        default: {
+            $Ids = array_column($table, 'Id');
+            array_multisort($Ids, SORT_ASC, $table);
+        }
+    }
+}
 function FillTable($results)
 {
     foreach ($results as $res) {
@@ -113,6 +138,13 @@ if (isset($_POST['save'])) {
 }
 if (isset($_POST['cancel'])) {
     Refresh();
+}
+$currentSort = $_POST['sortby'] ?? ''; // value of sortedBy
+if (isset($_POST['sort'])) {
+    if (isset($_POST['sortby'])) {
+        $currentSort = $_POST['sortby'];
+        SortBy($_POST['sortby'], $results);
+    }
 }
 // EDIT buttons handle
 foreach ($results as $item) {
@@ -198,7 +230,22 @@ foreach ($results as $r) {
                             <th scope="col">Competition</th>
                             <th scope="col">Athlete</th>
                             <th scope="col">Time</th>
-                            <th scope="col"></th>
+                            <th scope="col">
+                                <div class="input-group text-align-center">
+                                    <select name="sortby" class="form-select form-select-sm" style="width:10px;">
+                                        <?php
+                                        $keys = array_keys($results[0]);
+                                        foreach ($keys as $key) {
+                                            if ($key != 'IsActive') {
+                                                $selected = $currentSort === $key ? 'selected' : '';
+                                                echo '<option value="' . $key . '" ' . $selected . '>' . $key . '</option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                    <button type='submit' class="btn  btn-primary btn-sm " name="sort">Sort</button>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
