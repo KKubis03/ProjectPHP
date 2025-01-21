@@ -26,6 +26,7 @@ foreach ($competitionIds as $id) {
         $allCompetitions[] = $competition;
     }
 }
+$distance = $_SESSION['distance'] ?? '';
 function Refresh()
 {
     header("Refresh:0");
@@ -108,8 +109,14 @@ if (isset($_POST['refresh'])) {
 }
 if (isset($_POST['show'])) {
     $_SESSION['athleteId'] = $_POST['athlete'];
+    $_SESSION['distance'] = '';
     Refresh();
 }
+if (isset($_POST['showtimes'])) {
+    $_SESSION['distance'] = $_POST['distance'];
+    Refresh();
+}
+
 $currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
 ?>
 
@@ -147,15 +154,60 @@ $currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
             </select>
             <button type="submit" class="btn btn-outline-info mb-2" name="show" style="width: 200px;">Show info</button>
         </form>
-        <!-- Personal Details -->
-        <div class="w-100 mb-5 align-items-center">
-            <h2 class="text-center mb-3" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Personal Details</h2>
-            <div class="container text-center">
-                <p class="fw-bold">Name: <?= $athlete['FirstName'] ?? '' ?></p>
-                <p class="fw-bold">Surname: <?= $athlete['LastName'] ?? '' ?></p>
-                <p class="fw-bold">Gender: <?= $athlete['Sex'] ?? '' ?></p>
-                <p class="fw-bold">Country: <?= $athlete['Country'] ?? '' ?></p>
-                <p class="fw-bold">City: <?= $athlete['City'] ?? '' ?></p>
+        <div class="row w-100">
+            <!-- Personal Details -->
+            <div class="col mb-5 align-items-center">
+                <h2 class="text-center mb-3" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Personal Details</h2>
+                <div class="container text-center">
+                    <p class="fw-bold">Name: <?= $athlete['FirstName'] ?? '' ?></p>
+                    <p class="fw-bold">Surname: <?= $athlete['LastName'] ?? '' ?></p>
+                    <p class="fw-bold">Gender: <?= $athlete['Sex'] ?? '' ?></p>
+                    <p class="fw-bold">Country: <?= $athlete['Country'] ?? '' ?></p>
+                    <p class="fw-bold">City: <?= $athlete['City'] ?? '' ?></p>
+                </div>
+            </div>
+            <!-- Progress -->
+            <div class="col justify-content-center align-items-center">
+                <h2 class="text-center mb-3" style="text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">Progress</h2>
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                        <form method="POST" class="d-flex flex-column align-items-center gap-2">
+                            <select class="form-select" name="distance" style="width:200px;">
+                                <?php
+                                $distances = [];
+                                foreach ($allCompetitions as $c) {
+                                    if (!in_array($c['Distance'], $distances))
+                                        array_push($distances, $c['Distance']);
+                                }
+                                sort($distances);
+                                foreach ($distances as $d) {
+                                    $selected = $distance === $d ? 'selected' : '';
+                                    $_SESSION['distance'] = $distance;
+                                    echo '<option value="' . $d . '" ' . $selected . '>' . $d . ' m' . '</option>';
+                                }
+                                ?>
+                            </select>
+                            <button type="submit" class="btn btn-outline-info" name="showtimes"
+                                style="width: 200px;">ShowTimes</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="row justify-content-center mt-3">
+                    <?php
+                    $givenDistancesCompetitionIds = [];
+                    foreach ($allCompetitions as $c) {
+                        if ($c['Distance'] == $_SESSION['distance']) {
+                            if (!in_array($c['Id'], $givenDistancesCompetitionIds))
+                                array_push($givenDistancesCompetitionIds, $c['Id']);
+                        }
+                    }
+                    foreach ($results as $r) {
+                        if (in_array($r['CompetitionId'], $givenDistancesCompetitionIds)) {
+                            echo '<p class="lead text-center">' . $r['Time'] . '</p>';
+                        }
+                    }
+                    ?>
+                </div>
             </div>
         </div>
         <!-- Competitions -->
