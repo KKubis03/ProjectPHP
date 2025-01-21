@@ -8,11 +8,11 @@ $_SESSION['compId'] = $compId = $_POST['compId'] ?? '';
 function IsFormValid($competition)
 {
     if (
-        !empty($competition[0]) && !is_numeric($competition[0]) && // name should not be a number 
-        !empty($competition[1]) && is_numeric($competition[1]) && $competition[1] > 0 && // distance must be a number and > 0
-        !empty($competition[2]) &&
-        !empty($competition[3]) && !is_numeric($competition[3]) && // country should not be a number 
-        !empty($competition[4]) && !is_numeric($competition[4]) // city should not be a number 
+        !empty($competition['Name']) && !is_numeric($competition['Name']) && // name should not be a number 
+        !empty($competition['Distance']) && is_numeric($competition['Distance']) && $competition['Distance'] > 0 && // distance must be a number and > 0
+        !empty($competition['Date']) &&
+        !empty($competition['Country']) && !is_numeric($competition['Country']) && // country should not be a number 
+        !empty($competition['City']) && !is_numeric($competition['City']) // city should not be a number 
     )
         return true;
     else
@@ -23,8 +23,13 @@ function IsFormValid($competition)
 // function that returns table of fields ready to save in database
 function GetData()
 {
-    $competition = [];
-    array_push($competition, $_POST['name'], $_POST['distance'], $_POST['date'], $_POST['country'], $_POST['city']);
+    $competition = [
+        'Name' => $_POST['name'] ?? '',
+        'Distance' => $_POST['distance'] ?? '',
+        'Date' => $_POST['date'] ?? '',
+        'Country' => $_POST['country'] ?? '',
+        'City' => $_POST['city'] ?? ''
+    ];
     return $competition;
 }
 function Refresh()
@@ -66,11 +71,11 @@ function Save($compId, $connection)
 function Insert($connection, $competition)
 {
     $query = "insert into competitions (Name, Distance, Date, Country, City, IsActive) values (
-        '" . $competition[0] . "', 
-        '" . $competition[1] . "', 
-        '" . $competition[2] . "', 
-        '" . $competition[3] . "', 
-        '" . $competition[4] . "',
+        '" . $competition['Name'] . "', 
+        '" . $competition['Distance'] . "', 
+        '" . $competition['Date'] . "', 
+        '" . $competition['Country'] . "', 
+        '" . $competition['City'] . "',
         '" . true . "'
         );";
     mysqli_query($connection, $query) or exit("Query $query failed");
@@ -78,11 +83,11 @@ function Insert($connection, $competition)
 function Edit($id, $connection, $competition)
 {
     $query = "update competitions set 
-            Name = '" . $competition[0] . "', 
-            Distance = '" . $competition[1] . "', 
-            Date = '" . $competition[2] . "', 
-            Country = '" . $competition[3] . "', 
-            City = '" . $competition[4] . "' 
+            Name = '" . $competition['Name'] . "', 
+            Distance = '" . $competition['Distance'] . "', 
+            Date = '" . $competition['Date'] . "', 
+            Country = '" . $competition['Country'] . "', 
+            City = '" . $competition['City'] . "' 
             where Id = '" . $id . "';";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
@@ -97,13 +102,7 @@ function Remove($compId, $connection)
 $query = "select * from competitions where IsActive = true;";
 $result = mysqli_query($connection, $query);
 $competitions = mysqli_fetch_all($result, MYSQLI_ASSOC);
-$comp = [
-    'Name' => $_POST['name'] ?? '',
-    'Distance' => $_POST['distance'] ?? '',
-    'Date' => $_POST['date'] ?? '',
-    'Country' => $_POST['country'] ?? '',
-    'City' => $_POST['city'] ?? ''
-];
+$comp = GetData();
 // BUTTONS HANDLING
 if (isset($_POST['logout'])) {
     session_destroy();
