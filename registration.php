@@ -1,4 +1,5 @@
 <?php
+session_start();
 $user = [];
 // Function to check if user with given login already exists
 $file = fopen("users.csv", "a");
@@ -68,7 +69,11 @@ if (isset($_POST['log'])) {
                 <label class="form-label">Password</label>
                 <input type="password" class="form-control" name="password" style="width: 300px; margin: 0 auto;">
             </div>
-            <h1 class="h4 primary text-center fw-bold mb-4 text-warning"><?= $error_message ?></h1>
+            <h1 class="h4 primary text-center fw-bold mb-4 text-warning">
+                <?php if (isset($_POST['create']))
+                    echo $error_message;
+                ?>
+            </h1>
             <div class="mb-3">
                 <button name="log" class="btn btn-outline-secondary">Back to Log in</button>
                 <button name="create" class="btn btn-outline-primary">Create Account</button>
