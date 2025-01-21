@@ -39,7 +39,7 @@ if (isset($_POST['results'])) {
             style="text-align: center; margin: 30px; font-weight: bold;   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">
             Sports competitions</h1>
         <form method="POST">
-            <div class="btn-group" role="group" aria-label="Basic example">
+            <div class="btn-group mb-2" role="group" aria-label="Basic example">
                 <button name="refresh" class="btn btn-primary">Refresh</button>
                 <button name="logout" class="btn btn-primary">Logout</button>
             </div>
