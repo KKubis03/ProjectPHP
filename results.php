@@ -8,8 +8,8 @@ $_SESSION['resultId'] = $resultId = $_POST['resultId'] ?? '';
 function GetData()
 {
     $res = [
-        'CompetitionId' => $_POST['competitionId'] ?? '',
-        'AthleteId' => $_POST['athleteId'] ?? '',
+        'CompetitionId' => $_POST['competition'] ?? '',
+        'AthleteId' => $_POST['athlete'] ?? '',
         'Time' => $_POST['time'] ?? '',
     ];
     return $res;
@@ -55,13 +55,23 @@ function SortBy($key, &$table)
         }
     }
 }
-function FillTable($results)
+function FillTable($results, $competitions, $athletes)
 {
     foreach ($results as $res) {
+        $Competition = '';
+        $Athlete = '';
+        foreach ($competitions as $c) {
+            if ($c['Id'] == $res['CompetitionId'])
+                $Competition = $c['Name'];
+        }
+        foreach ($athletes as $a) {
+            if ($a['Id'] == $res['AthleteId'])
+                $Athlete = $a['FirstName'] . " " . $a['LastName'];
+        }
         echo "<tr>";
         echo "<td>" . $res['Id'] . "</td>";
-        echo "<td>" . $res['CompetitionId'] . "</td>";
-        echo "<td>" . $res['AthleteId'] . "</td>";
+        echo "<td>" . $Competition . "</td>";
+        echo "<td>" . $Athlete . "</td>";
         echo "<td>" . $res['Time'] . "</td>";
         echo '<td> <div class="btn-group"><button class="btn btn-outline-primary btn-sm" name="edit' . $res['Id']
             . '"><span class="material-symbols-outlined" style="font-size:20px;">edit</span></button>'
@@ -119,6 +129,14 @@ $query = "select * from results where IsActive = true;";
 $result = mysqli_query($connection, $query);
 $results = mysqli_fetch_all($result, MYSQLI_ASSOC);
 $res = GetData();
+// query to get competitions
+$query = "select * from competitions where IsActive = true;";
+$result1 = mysqli_query($connection, $query);
+$competitions = mysqli_fetch_all($result1, MYSQLI_ASSOC);
+// query to get athletes
+$query = "select * from athletes where IsActive = true;";
+$result2 = mysqli_query($connection, $query);
+$athletes = mysqli_fetch_all($result2, MYSQLI_ASSOC);
 // BUTTONS HANDLING
 if (isset($_POST['logout'])) {
     session_destroy();
@@ -199,12 +217,26 @@ foreach ($results as $r) {
                         <input type="hidden" name="resultId" value="<?= $resultId ?>">
                         <!-- hidden form to store Id -->
                         <label class="form-label">Competition:</label>
-                        <input type="text" class="form-control" name="competitionId"
+                        <select name="competition" class="form-select form-select-sm"
                             value="<?= $res['CompetitionId'] ?>">
+                            <?php
+                            foreach ($competitions as $c) {
+                                $selected = $res['CompetitionId'] === $c['Id'] ? 'selected' : '';
+                                echo '<option value="' . $c['Id'] . '" ' . $selected . '>' . $c['Name'] . '</option>';
+                            }
+                            ?>
+                        </select>
                     </div>
                     <div class="col mb-3">
                         <label class="form-label">Athlete:</label>
-                        <input type="text" class="form-control" name="athleteId" value="<?= $res['AthleteId'] ?>">
+                        <select name="athlete" class="form-select form-select-sm" value="<?= $res['AthleteId'] ?>">
+                            <?php
+                            foreach ($athletes as $a) {
+                                $selected = $res['AthleteId'] === $a['Id'] ? 'selected' : '';
+                                echo '<option value="' . $a['Id'] . '" ' . $selected . '>' . $a['FirstName'] . ' ' . $a['LastName'] . '</option>';
+                            }
+                            ?>
+                        </select>
                     </div>
                     <div class="col mb-3">
                         <label class="form-label mb-3">Time:</label><br>
@@ -250,7 +282,7 @@ foreach ($results as $r) {
                     </thead>
                     <tbody>
                         <!-- Filling table with records -->
-                        <?php FillTable($results); ?>
+                        <?php FillTable($results, $competitions, $athletes); ?>
                     </tbody>
                 </table>
             </form>
