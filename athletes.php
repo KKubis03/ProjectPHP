@@ -36,6 +36,41 @@ function Refresh()
     header("Refresh:0");
     exit();
 }
+// function to sort table
+function SortBy($key, &$table)
+{
+    switch ($key) {
+        case "FirstName": {
+            $FNames = array_column($table, 'FirstName');
+            array_multisort($FNames, SORT_ASC, $table);
+        }
+            break;
+        case "LastName": {
+            $LNames = array_column($table, 'LastName');
+            array_multisort($LNames, SORT_ASC, $table);
+        }
+            break;
+        case "Sex": {
+            $Sex = array_column($table, 'Sex');
+            array_multisort($Sex, SORT_ASC, $table);
+        }
+            break;
+        case "Country": {
+            $Countries = array_column($table, 'Country');
+            array_multisort($Countries, SORT_ASC, $table);
+        }
+            break;
+        case "City": {
+            $Cities = array_column($table, 'City');
+            array_multisort($Cities, SORT_ASC, $table);
+        }
+            break;
+        default: {
+            $Ids = array_column($table, 'Id');
+            array_multisort($Ids, SORT_ASC, $table);
+        }
+    }
+}
 function FillTable($athletes)
 {
     foreach ($athletes as $athlete) {
@@ -124,6 +159,13 @@ if (isset($_POST['save'])) {
 }
 if (isset($_POST['cancel'])) {
     Refresh();
+}
+$currentSort = $_POST['sortby'] ?? ''; // value of sortedBy
+if (isset($_POST['sort'])) {
+    if (isset($_POST['sortby'])) {
+        $currentSort = $_POST['sortby'];
+        SortBy($_POST['sortby'], $athletes);
+    }
 }
 // EDIT buttons handle
 foreach ($athletes as $item) {
@@ -224,7 +266,22 @@ foreach ($athletes as $a) {
                             <th scope="col">Gender</th>
                             <th scope="col">Country</th>
                             <th scope="col">City</th>
-                            <th scope="col"></th>
+                            <th scope="col">
+                                <div class="input-group text-align-center">
+                                    <select name="sortby" class="form-select form-select-sm" style="width:10px;">
+                                        <?php
+                                        $keys = array_keys($athletes[0]);
+                                        foreach ($keys as $key) {
+                                            if ($key != 'IsActive') {
+                                                $selected = $currentSort === $key ? 'selected' : '';
+                                                echo '<option value="' . $key . '" ' . $selected . '>' . $key . '</option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                    <button type='submit' class="btn  btn-primary btn-sm " name="sort">Sort</button>
+                                </div>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>

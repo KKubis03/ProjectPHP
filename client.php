@@ -3,7 +3,7 @@ session_start();
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 // query to get all athletes
-$result = mysqli_query($connection, "select * from athletes") or exit("Failed");
+$result = mysqli_query($connection, "select * from athletes where IsActive = true") or exit("Failed");
 $athletes = mysqli_fetch_all($result);
 $_SESSION['athleteId'] = $_POST['athlete'] ?? '';
 $userId = $_SESSION['athleteId'];
@@ -12,11 +12,11 @@ $result = mysqli_query($connection, "select * from athletes where id = '$userId'
 $athlete = mysqli_fetch_assoc($result);
 $athleteId = $athlete["Id"] ?? '';
 // query to get results
-$result2 = mysqli_query($connection, "select* from results where athleteId = '$athleteId'");
+$result2 = mysqli_query($connection, "select* from results where athleteId = '$athleteId' and IsActive = true");
 $results = mysqli_fetch_all($result2, MYSQLI_ASSOC); // Fetch all results
 
 // query to get competitionsId's
-$result3 = mysqli_query($connection, "select CompetitionId from results where AthleteId = '$athleteId'");
+$result3 = mysqli_query($connection, "select CompetitionId from results where AthleteId = '$athleteId' and IsActive = true");
 $competitionIds = mysqli_fetch_all($result3);
 // query to get all competitions with 
 $allCompetitions = [];
@@ -65,7 +65,6 @@ if (isset($_POST['refresh'])) {
             <select class="form-select mb-2" name="athlete">
                 <option>Select athlete</option>
                 <?php
-                print_r($athletes);
                 foreach ($athletes as $a) {
                     echo '<option value="' . $a[0] . '">' . $a[1] . ' ' . $a[2] . '</option>';
                 }
