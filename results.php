@@ -5,6 +5,26 @@ session_start();
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $_SESSION['resultId'] = $resultId = $_POST['resultId'] ?? '';
 
+function GetData()
+{
+    $res = [
+        'CompetitionId' => $_POST['competitionId'] ?? '',
+        'AthleteId' => $_POST['athleteId'] ?? '',
+        'Time' => $_POST['time'] ?? '',
+    ];
+    return $res;
+}
+function IsFormValid($res)
+{
+    if (
+        !empty($res['CompetitionId']) && is_numeric($res['CompetitionId']) &&
+        !empty($res['AthleteId']) && is_numeric($res['AthleteId']) &&
+        !empty($res['Time'])
+    )
+        return true;
+    else
+        return false;
+}
 function Refresh()
 {
     header("Refresh:0");
@@ -28,30 +48,38 @@ function FillTable($results)
 }
 function Save($resultId, $connection)
 {
-    $resultExists = mysqli_query($connection, "select * from results where Id = '" . $resultId . "';");
-    if (mysqli_num_rows($resultExists) == 0) {
-        Insert($connection);
-    } else {
-        Edit($resultId, $connection);
-    }
+    $res = GetData();
+    $resultExists = mysqli_query($connection, "select * from results where Id = '" . $resultId
+        . "' or (CompetitionId = '" . $res['CompetitionId']
+        . "' and AthleteId = '" . $res['AthleteId'] . "')");
+    if (IsFormValid($res)) {
+        if (mysqli_num_rows($resultExists) == 0) {
+            Insert($connection, $res);
+        } else {
+            Edit($resultId, $connection, $res);
+        }
+    } else
+        echo "Invalid data cannot save to database";
+
 }
-function Insert($connection)
+function Insert($connection, $res)
 {
     $query = "insert into results (CompetitionId, AthleteId, Time, IsActive) values (
-        '" . $_POST['competitionId'] . "', 
-        '" . $_POST['athleteId'] . "', 
-        '" . $_POST['time'] . "', 
+        '" . $res['CompetitionId'] . "', 
+        '" . $res['AthleteId'] . "', 
+        '" . $res['Time'] . "', 
         '" . true . "'
         );";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
-function Edit($id, $connection)
+function Edit($id, $connection, $res)
 {
     $query = "update results set 
-    CompetitionId = '" . $_POST['competitionId'] . "', 
-    AthleteId = '" . $_POST['athleteId'] . "', 
-    Time = '" . $_POST['time'] . "'
-    where Id = '" . $id . "';";
+    CompetitionId = '" . $res['CompetitionId'] . "', 
+    AthleteId = '" . $res['AthleteId'] . "', 
+    Time = '" . $res['Time'] . "'
+    where Id = '" . $id . "' or (AthleteId = '" . $res['AthleteId']
+        . "' and CompetitionId = '" . $res['CompetitionId'] . "');";
     mysqli_query($connection, $query) or exit("Query $query failed");
 }
 function Remove($resultId, $connection)
@@ -65,11 +93,7 @@ function Remove($resultId, $connection)
 $query = "select * from results where IsActive = true;";
 $result = mysqli_query($connection, $query);
 $results = mysqli_fetch_all($result, MYSQLI_ASSOC);
-$res = [
-    'CompetitionId' => $_POST['competitionId'] ?? '',
-    'AthleteId' => $_POST['athleteId'] ?? '',
-    'Time' => $_POST['time'] ?? '',
-];
+$res = GetData();
 // BUTTONS HANDLING
 if (isset($_POST['logout'])) {
     session_destroy();
@@ -143,17 +167,16 @@ foreach ($results as $r) {
                         <input type="hidden" name="resultId" value="<?= $resultId ?>">
                         <!-- hidden form to store Id -->
                         <label class="form-label">Competition:</label>
-                        <input type="text" class="form-control" name="competitionId" required
+                        <input type="text" class="form-control" name="competitionId"
                             value="<?= $res['CompetitionId'] ?>">
                     </div>
                     <div class="col mb-3">
                         <label class="form-label">Athlete:</label>
-                        <input type="text" class="form-control" name="athleteId" required
-                            value="<?= $res['AthleteId'] ?>">
+                        <input type="text" class="form-control" name="athleteId" value="<?= $res['AthleteId'] ?>">
                     </div>
                     <div class="col mb-3">
                         <label class="form-label mb-3">Time:</label><br>
-                        <input type="time" step="1" name="time" class="mx-2" required value="<?= $res['Time'] ?>">
+                        <input type="time" step="1" name="time" class="mx-2" value="<?= $res['Time'] ?>">
                     </div>
                 </div>
                 <div class="row">

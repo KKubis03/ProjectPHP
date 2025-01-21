@@ -22,7 +22,7 @@ function IsFormValid($athlete)
 {
     if (
         !empty($athlete['Name']) && !is_numeric($athlete['Name']) && // name should not be a number 
-        !empty($athlete['Surname']) && !is_numeric($athlete['Surname']) && // surname should not be anuber
+        !empty($athlete['Surname']) && !is_numeric($athlete['Surname']) && // surname should not be a number
         !empty($athlete['Gender']) &&
         !empty($athlete['Country']) && !is_numeric($athlete['Country']) && // country should not be a number 
         !empty($athlete['City']) && !is_numeric($athlete['City']) // city should not be a number 
