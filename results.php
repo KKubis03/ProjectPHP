@@ -62,11 +62,11 @@ function FillTable($results, $competitions, $athletes)
         $Athlete = '';
         foreach ($competitions as $c) {
             if ($c['Id'] == $res['CompetitionId'])
-                $Competition = $c['Name'];
+                $Competition = "[" . $c['Id'] . "] " . $c['Name'];
         }
         foreach ($athletes as $a) {
             if ($a['Id'] == $res['AthleteId'])
-                $Athlete = $a['FirstName'] . " " . $a['LastName'];
+                $Athlete = "[" . $a['Id'] . "] " . $a['FirstName'] . " " . $a['LastName'];
         }
         echo "<tr>";
         echo "<td>" . $res['Id'] . "</td>";

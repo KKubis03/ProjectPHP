@@ -5,12 +5,12 @@ $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 // query to get all athletes
 $result = mysqli_query($connection, "select * from athletes where IsActive = true") or exit("Failed");
 $athletes = mysqli_fetch_all($result);
-$_SESSION['athleteId'] = $_POST['athlete'] ?? '';
-$userId = $_SESSION['athleteId'];
+$userId = $_SESSION['athleteId'] ?? '';
 // query to get athlete
 $result = mysqli_query($connection, "select * from athletes where id = '$userId'") or exit("Failed");
 $athlete = mysqli_fetch_assoc($result);
 $athleteId = $athlete["Id"] ?? '';
+//$_SESSION['athleteId'] = $athleteId;
 // query to get results
 $result2 = mysqli_query($connection, "select* from results where athleteId = '$athleteId' and IsActive = true");
 $results = mysqli_fetch_all($result2, MYSQLI_ASSOC); // Fetch all results
@@ -26,6 +26,75 @@ foreach ($competitionIds as $id) {
         $allCompetitions[] = $competition;
     }
 }
+function Refresh()
+{
+    header("Refresh:0");
+    exit();
+}
+// function to sort table
+function SortBy($key, &$table)
+{
+    switch ($key) {
+        case "Name": {
+            $Names = array_column($table, 'Name');
+            array_multisort($Names, SORT_ASC, $table);
+        }
+            break;
+        case "Distance": {
+            $Dis = array_column($table, 'Distance');
+            array_multisort($Dis, SORT_ASC, $table);
+        }
+            break;
+        case "Date": {
+            $Dates = array_column($table, 'Date');
+            array_multisort($Dates, SORT_ASC, $table);
+        }
+            break;
+        case "Country": {
+            $Countries = array_column($table, 'Country');
+            array_multisort($Countries, SORT_ASC, $table);
+        }
+            break;
+        case "City": {
+            $Cities = array_column($table, 'City');
+            array_multisort($Cities, SORT_ASC, $table);
+        }
+            break;
+        case "Time": {
+            $Times = array_column($table, 'Time');
+            array_multisort($Times, SORT_ASC, $table);
+        }
+            break;
+        default: {
+            $Ids = array_column($table, 'Id');
+            array_multisort($Ids, SORT_ASC, $table);
+        }
+    }
+}
+function FillTable($competitions, $results)
+{
+    $row = 0;
+    foreach ($competitions as $competition) {
+        $row++;
+        echo "<tr>";
+        echo "<th scope='row'>$row</th>";
+        echo "<td>" . $competition['Name'] . "</td>";
+        echo "<td>" . $competition['Distance'] . " m</td>";
+        echo "<td>" . $competition['Date'] . "</td>";
+        echo "<td>" . $competition['Country'] . "</td>";
+        echo "<td>" . $competition['City'] . "</td>";
+        $competitionId = $competition['Id'];
+        $time = null;
+        foreach ($results as $result) {
+            if ($result['CompetitionId'] == $competitionId) {
+                $time = $result['Time'];
+                break;
+            }
+        }
+        echo "<td>" . $time . "</td>";
+        echo "</tr>";
+    }
+}
 
 if (isset($_POST['logout'])) {
     session_destroy();
@@ -37,9 +106,12 @@ if (isset($_POST['refresh'])) {
     header("Refresh:0");
     exit();
 }
+if (isset($_POST['show'])) {
+    $_SESSION['athleteId'] = $_POST['athlete'];
+    Refresh();
+}
+$currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
 ?>
-
-
 
 <!doctype html>
 <html lang="en">
@@ -63,14 +135,16 @@ if (isset($_POST['refresh'])) {
                 <button name="logout" class="btn btn-primary">Logout</button>
             </div>
             <select class="form-select mb-2" name="athlete">
-                <option>Select athlete</option>
+                <option>Select Athlete</option>
                 <?php
                 foreach ($athletes as $a) {
-                    echo '<option value="' . $a[0] . '">' . $a[1] . ' ' . $a[2] . '</option>';
+                    $selected = $athleteId === $a[0] ? 'selected' : '';
+                    $_SESSION['athleteId'] = $athleteId;
+                    echo '<option value="' . $a[0] . '" ' . $selected . '>' . $a[1] . ' ' . $a[2] . '</option>';
                 }
                 ?>
             </select>
-            <button class="btn btn-outline-info" type="submit" style="width: 200px;">Show info</button>
+            <button type="submit" class="btn btn-outline-info" name="show" style="width: 200px;">Show info</button>
         </form>
         <!-- Personal Details -->
         <div class="w-100 mb-5 align-items-center">
@@ -85,51 +159,49 @@ if (isset($_POST['refresh'])) {
         </div>
         <!-- Competitions -->
         <div class="w-100">
-            <h2 class="text-center mb-3">Competitions</h2>
-            <table class="table table-bordered text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Competition Name</th>
-                        <th scope="col">Distance</th>
-                        <th scope="col">Date</th>
-                        <th scope="col">Country</th>
-                        <th scope="col">City</th>
-                        <th scope="col">Time (h:m:s)</th>
-                    </tr>
-                </thead>
-                <tbody>
-
-
-                    <?php
-                    if (isset($_POST['athlete'])) {
-                        $row = 0;
-                        foreach ($allCompetitions as $competition) {
-                            $row++;
-                            echo "<tr>";
-                            echo "<th scope='row'>$row</th>";
-                            echo "<td>" . $competition['Name'] . "</td>";
-                            echo "<td>" . $competition['Distance'] . " m</td>";
-                            echo "<td>" . $competition['Date'] . "</td>";
-                            echo "<td>" . $competition['Country'] . "</td>";
-                            echo "<td>" . $competition['City'] . "</td>";
-                            $competitionId = $competition['Id'];
-                            $time = null;
-                            foreach ($results as $result) {
-                                if ($result['CompetitionId'] == $competitionId) {
-                                    $time = $result['Time'];
-                                    break;
-                                }
+            <form method="POST">
+                <h2 class="text-center mb-3">Competitions</h2>
+                <table class="table table-bordered text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Competition Name</th>
+                            <th scope="col">Distance</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Country</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Time (h:m:s)</th>
+                            <th scope="col">
+                                <div class="input-group text-align-center">
+                                    <select name="sortby" class="form-select form-select-sm" style="width:50px;">
+                                        <?php
+                                        $keys = array_keys($allCompetitions[0]);
+                                        foreach ($keys as $key) {
+                                            if ($key != 'IsActive') {
+                                                $selected = $currentSort === $key ? 'selected' : '';
+                                                echo '<option value="' . $key . '" ' . $selected . '>' . $key . '</option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                    <button type="submit" name="sort" class="btn btn-primary btn-sm ">Sort</button>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        if (isset($_POST['sort'])) {
+                            if (isset($_POST['sortby'])) {
+                                $currentSort = $_POST['sortby'];
+                                SortBy($currentSort, $allCompetitions);
                             }
-                            echo "<td>" . $time . "</td>";
-                            echo "</tr>";
                         }
-                    }
-                    ?>
-
-
-                </tbody>
-            </table>
+                        FillTable($allCompetitions, $results);
+                        ?>
+                    </tbody>
+                </table>
+            </form>
         </div>
         <!-- Progress -->
         <div class="w-100">

@@ -43,7 +43,7 @@ function FillTable($competitions)
         echo "<tr>";
         echo "<td>" . $comp['Id'] . "</td>";
         echo "<td>" . $comp['Name'] . "</td>";
-        echo "<td>" . $comp['Distance'] . "</td>";
+        echo "<td>" . $comp['Distance'] . " (m)" . "</td>";
         echo "<td>" . $comp['Date'] . "</td>";
         echo "<td>" . $comp['Country'] . "</td>";
         echo "<td>" . $comp['City'] . "</td>";
@@ -278,7 +278,6 @@ foreach ($competitions as $c) {
                                     </select>
                                     <button type='submit' class="btn  btn-primary btn-sm " name="sort">Sort</button>
                                 </div>
-
                             </th>
                         </tr>
                     </thead>
