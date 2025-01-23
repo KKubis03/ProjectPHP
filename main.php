@@ -13,7 +13,7 @@ function FindUser($login, $file)
     }
   }
 }
-$error_message = '';
+$_SESSION['error'] = $_SESSION['error'] ?? '';
 if (isset($_POST['login']) && isset($_POST['password'])) {
   $loginOK = false;
   $login = $_POST['login'];
@@ -25,16 +25,18 @@ if (isset($_POST['login']) && isset($_POST['password'])) {
     }
   }
   if ($loginOK) {
+    $_SESSION['error'] = '';
     if ($user[2] == "admin")
       header("Location: admin.php");
     else
       header("Location: client.php");
     exit;
   } else {
-    $error_message = "Login or password is incorrect.";
+    $_SESSION['error'] = "Login or password is incorrect.";
   }
 }
 if (isset($_POST['register'])) {
+  $_SESSION['error'] = '';
   header("Location: registration.php");
   exit;
 }
@@ -67,7 +69,7 @@ if (isset($_POST['register'])) {
         <label class="form-label">Password</label>
         <input type="password" class="form-control" name="password" style="width: 300px; margin: 0 auto;">
       </div>
-      <h1 class="h4 primary text-center fw-bold mb-4 text-warning"><?= $error_message ?></h1>
+      <h1 class="h4 primary text-center fw-bold mb-4 text-warning"><?= $_SESSION['error'] ?></h1>
       <div class="mb-3">
         <button type="submit" class="btn btn-primary">Log in</button>
         <button name="register" class="btn btn-outline-secondary">Register</button>

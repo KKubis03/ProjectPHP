@@ -3,6 +3,7 @@ session_start();
 $user = [];
 // Function to check if user with given login already exists
 $file = fopen("users.csv", "a");
+$_SESSION['error'] = $_SESSION['error'] ?? '';
 function UserExists($login)
 {
     $file = fopen("users.csv", "r");
@@ -19,26 +20,27 @@ function AddUser($file, $user)
     flock($file, LOCK_UN);
 
 }
-$error_message = '';
 if (isset($_POST['login']) && !empty($_POST['login'])) {
     $login = $_POST['login'];
     if (UserExists($login)) {
-        $error_message .= 'User with "' . $login . '" login already exists';
+        $_SESSION['error'] = 'User with "' . $login . '" login already exists';
     } else if (isset($_POST['password']) && !empty($_POST['password'])) {
         $password = $_POST['password'];
         $Hashedpassword = password_hash($password, PASSWORD_DEFAULT);
         array_push($user, $login, $Hashedpassword, "client");
         AddUser($file, $user);
     } else
-        $error_message = "Password cannot be empty";
+        $_SESSION['error'] = "Password cannot be empty";
 } else {
-    $error_message = 'Login cannot be empty';
+    $_SESSION['error'] = 'Login cannot be empty';
 }
-if (isset($_POST['create']) && empty($error_message)) {
+if (isset($_POST['create']) && empty($_SESSION['error'])) {
+    $_SESSION['error'] = "";
     header("Location: main.php");
     exit;
 }
 if (isset($_POST['log'])) {
+    $_SESSION['error'] = "";
     header("Location: main.php");
     exit;
 }
@@ -73,7 +75,7 @@ if (isset($_POST['log'])) {
             </div>
             <h1 class="h4 primary text-center fw-bold mb-4 text-warning">
                 <?php if (isset($_POST['create']))
-                    echo $error_message;
+                    echo $_SESSION['error'];
                 ?>
             </h1>
             <div class="mb-3">
