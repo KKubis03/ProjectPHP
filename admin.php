@@ -33,8 +33,9 @@ if (isset($_POST['results'])) {
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
-<body>
-    <div class="container d-flex flex-column align-items-center">
+
+<body id="grad">
+    <div class="container d-flex flex-column align-items-center ">
         <h1 class="display-3"
             style="text-align: center; margin: 30px; font-weight: bold;   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);">
             Sports competitions</h1>

@@ -4,6 +4,7 @@ session_start();
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $_SESSION['resultId'] = $resultId = $_POST['resultId'] ?? '';
+$_SESSION['error'] = $_SESSION['error'] ?? '';
 
 function GetData()
 {
@@ -81,7 +82,7 @@ function FillTable($results, $competitions, $athletes)
         echo "</tr>";
     }
 }
-function Save($resultId, $connection)
+function Save($resultId, $connection, &$error)
 {
     $res = GetData();
     $resultExists = mysqli_query($connection, "select * from results where Id = '" . $resultId
@@ -93,8 +94,9 @@ function Save($resultId, $connection)
         } else {
             Edit($resultId, $connection, $res);
         }
+        $_SESSION['error'] = '';
     } else
-        echo "Invalid data cannot save to database";
+        $_SESSION['error'] = "Invalid data cannot save to database";
 
 }
 function Insert($connection, $res)
@@ -112,7 +114,8 @@ function Edit($id, $connection, $res)
     $query = "update results set 
     CompetitionId = '" . $res['CompetitionId'] . "', 
     AthleteId = '" . $res['AthleteId'] . "', 
-    Time = '" . $res['Time'] . "'
+    Time = '" . $res['Time'] . "',
+    IsActive = '1'
     where Id = '" . $id . "' or (AthleteId = '" . $res['AthleteId']
         . "' and CompetitionId = '" . $res['CompetitionId'] . "');";
     mysqli_query($connection, $query) or exit("Query $query failed");
@@ -144,17 +147,20 @@ if (isset($_POST['logout'])) {
     exit();
 }
 if (isset($_POST['refresh'])) {
+    $_SESSION['error'] = '';
     Refresh();
 }
 if (isset($_POST['back'])) {
+    $_SESSION['error'] = '';
     header('Location: admin.php');
     exit();
 }
 if (isset($_POST['save'])) {
-    Save($_POST['resultId'], $connection);
+    Save($_POST['resultId'], $connection, $error_message);
     Refresh();
 }
 if (isset($_POST['cancel'])) {
+    $_SESSION['error'] = '';
     Refresh();
 }
 $currentSort = $_POST['sortby'] ?? ''; // value of sortedBy
@@ -241,8 +247,9 @@ foreach ($results as $r) {
                         </select>
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label mb-3">Time:</label><br>
-                        <input type="time" step="1" name="time" class="mx-2" value="<?= $res['Time'] ?>">
+                        <label class="form-label">Time:</label><br>
+                        <input type="time" step="1" name="time" class="form-control form-control-sm"
+                            value="<?= $res['Time'] ?>">
                     </div>
                 </div>
                 <div class="row">
@@ -255,7 +262,8 @@ foreach ($results as $r) {
         </div>
         <!-- Athletes table -->
         <div class="w-100 mt-3">
-            <h2 class="text-center mb-3">Competitions</h2>
+            <h4 class="text-center mb-3 text-danger"><?= $_SESSION['error'] ?></h4>
+            <h2 class="text-center mb-3">Results</h2>
             <form method="POST">
                 <table class="table table-bordered text-center">
                     <thead class="table-dark">

@@ -99,8 +99,9 @@ function Save($athleteId, $connection)
         } else {
             Edit($athleteId, $connection, $athlete);
         }
+        $_SESSION['error'] = "";
     } else
-        echo "Invalid data cannot save to database";
+        $_SESSION['error'] = "Invalid data cannot save to database";
 
 }
 function Insert($connection, $athlete)
@@ -147,9 +148,11 @@ if (isset($_POST['logout'])) {
     exit();
 }
 if (isset($_POST['refresh'])) {
+    $_SESSION['error'] = "";
     Refresh();
 }
 if (isset($_POST['back'])) {
+    $_SESSION['error'] = "";
     header('Location: admin.php');
     exit();
 }
@@ -158,6 +161,7 @@ if (isset($_POST['save'])) {
     Refresh();
 }
 if (isset($_POST['cancel'])) {
+    $_SESSION['error'] = "";
     Refresh();
 }
 $currentSort = $_POST['sortby'] ?? ''; // value of sortedBy
@@ -257,6 +261,7 @@ foreach ($athletes as $a) {
         </div>
         <!-- Athletes table -->
         <div class="w-100 mt-3">
+            <h4 class="text-center mb-3 text-danger"><?= $_SESSION['error'] ?></h4>
             <h2 class="text-center mb-3">Athletes</h2>
             <form method="POST">
                 <table class="table table-bordered text-center">
