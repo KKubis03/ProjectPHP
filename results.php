@@ -224,7 +224,7 @@ foreach ($results as $r) {
                     <div class="col mb-3">
                         <input type="hidden" name="resultId" value="<?= $resultId ?>">
                         <!-- hidden form to store Id -->
-                        <label class="form-label">Competition:</label>
+                        <label class="form-label fw-semibold">Competition:</label>
                         <select name="competition" class="form-select form-select-sm"
                             value="<?= $res['CompetitionId'] ?>">
                             <?php
@@ -236,7 +236,7 @@ foreach ($results as $r) {
                         </select>
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">Athlete:</label>
+                        <label class="form-label fw-semibold">Athlete:</label>
                         <select name="athlete" class="form-select form-select-sm" value="<?= $res['AthleteId'] ?>">
                             <?php
                             foreach ($athletes as $a) {
@@ -247,7 +247,7 @@ foreach ($results as $r) {
                         </select>
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">Time:</label><br>
+                        <label class="form-label fw-semibold">Time:</label><br>
                         <input type="time" step="1" name="time" class="form-control form-control-sm"
                             value="<?= $res['Time'] ?>">
                     </div>

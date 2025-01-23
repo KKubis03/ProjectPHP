@@ -225,25 +225,25 @@ foreach ($competitions as $c) {
                     <div class="col mb-3">
                         <input type="hidden" name="compId" value="<?= $compId ?>">
                         <!-- hidden form to store Id -->
-                        <label class="form-label">Name:</label>
+                        <label class="form-label fw-semibold">Name:</label>
                         <input type="text" class="form-control" name="name" value="<?= $comp['Name'] ?>">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">Distance:</label>
+                        <label class="form-label fw-semibold">Distance:</label>
                         <input type="text" class="form-control" name="distance" value="<?= $comp['Distance'] ?>">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">Date:</label><br>
+                        <label class="form-label fw-semibold">Date:</label><br>
                         <input type="date" name="date" class="form-control" value="<?= $comp['Date'] ?>">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col mb-3">
-                        <label class="form-label">Country:</label>
+                        <label class="form-label fw-semibold">Country:</label>
                         <input type="text" class="form-control" name="country" value="<?= $comp['Country'] ?>">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">City:</label>
+                        <label class="form-label fw-semibold">City:</label>
                         <input type="text" class="form-control" name="city" value="<?= $comp['City'] ?>">
                     </div>
                 </div>

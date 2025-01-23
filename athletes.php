@@ -228,26 +228,26 @@ foreach ($athletes as $a) {
                     <div class="col mb-3">
                         <input type="hidden" name="athleteid" value="<?= $athleteId ?>">
                         <!-- hidden form to store Id -->
-                        <label class="form-label">Name:</label>
+                        <label class="form-label fw-semibold">Name:</label>
                         <input type="text" class="form-control" name="name" value="<?= $athlete['Name'] ?>">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">Surname:</label>
+                        <label class="form-label fw-semibold">Surname:</label>
                         <input type="text" class="form-control" name="surname" value="<?= $athlete['Surname'] ?>">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label mb-3">Gender:</label><br>
+                        <label class="form-label fw-semibold mb-3">Gender:</label><br>
                         <input type="radio" name="sex" class="mx-2" value="Male" <?= $athlete['Gender'] == 'Male' ? 'checked' : '' ?>>Male
                         <input type="radio" name="sex" class="mx-2" value="Female" <?= $athlete['Gender'] == 'Female' ? 'checked' : '' ?>>Female
                     </div>
                 </div>
                 <div class="row">
                     <div class="col mb-3">
-                        <label class="form-label">Country:</label>
+                        <label class="form-label fw-semibold">Country:</label>
                         <input type="text" class="form-control" name="country" value="<?= $athlete['Country'] ?>">
                     </div>
                     <div class="col mb-3">
-                        <label class="form-label">City:</label>
+                        <label class="form-label fw-semibold">City:</label>
                         <input type="text" class="form-control" name="city" value="<?= $athlete['City'] ?>">
                     </div>
                 </div>
@@ -260,10 +260,18 @@ foreach ($athletes as $a) {
             </form>
         </div>
         <!-- Athletes table -->
-        <div class="w-100 mt-3">
+        <div class="w-100 mt-3 ">
             <h4 class="text-center mb-3 text-danger"><?= $_SESSION['error'] ?></h4>
             <h2 class="text-center mb-3">Athletes</h2>
             <form method="POST">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="input-group text-align-center w-25 mb-2">
+                        <label class="form-label fw-semibold m-1">Search by name: </label>
+                        <input type="text" name="search" class="form-control form-control-sm">
+                        <button type='submit' class="btn btn-primary btn-sm " name="search">Search</button>
+                    </div>
+
+                </div>
                 <table class="table table-bordered text-center">
                     <thead class="table-dark">
                         <tr>
@@ -274,7 +282,7 @@ foreach ($athletes as $a) {
                             <th scope="col">Country</th>
                             <th scope="col">City</th>
                             <th scope="col">
-                                <div class="input-group text-align-center">
+                                <div class="input-group">
                                     <select name="sortby" class="form-select form-select-sm" style="width:10px;">
                                         <?php
                                         $keys = array_keys($athletes[0]);
@@ -286,7 +294,7 @@ foreach ($athletes as $a) {
                                         }
                                         ?>
                                     </select>
-                                    <button type='submit' class="btn  btn-primary btn-sm " name="sort">Sort</button>
+                                    <button type='submit' class="btn btn-primary btn-sm " name="sort">Sort</button>
                                 </div>
                             </th>
                         </tr>
