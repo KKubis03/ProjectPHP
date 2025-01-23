@@ -260,7 +260,7 @@ $currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
                                     $prevTime = $r['Time'];
                                 } else if ($r['Time'] == $prevTime) {
                                     $icon = 'trending_flat';
-                                    $color = 'blue';
+                                    $color = '#0096FF';
                                     $prevTime = $r['Time'];
                                 } else {
                                     $icon = 'trending_down';
