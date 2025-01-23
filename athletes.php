@@ -4,7 +4,8 @@ session_start();
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $_SESSION['athleteId'] = $athleteId = $_POST['athleteid'] ?? '';
-$_SESSION['search'] = $_POST['search'] ?? $_SESSION['search'];
+$search = $_POST['search'] ?? '';
+$_SESSION['search'] = $search ?? $_SESSION['search'];
 // FUNCTIONS
 function GetData()
 {
@@ -276,7 +277,6 @@ foreach ($athletes as $a) {
                             value="<?= $_SESSION['search'] ?>">
                         <button type='submit' class="btn btn-primary btn-sm " name="searchButton">Search</button>
                     </div>
-
                 </div>
                 <table class="table table-bordered text-center">
                     <thead class="table-dark">

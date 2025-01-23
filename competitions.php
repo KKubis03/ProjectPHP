@@ -4,6 +4,8 @@ session_start();
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $_SESSION['compId'] = $compId = $_POST['compId'] ?? '';
+$search = $_POST['search'] ?? '';
+$_SESSION['search'] = $search ?? $_SESSION['search'];
 // Function to check if all fields of form are valid
 function IsFormValid($competition)
 {
@@ -133,7 +135,10 @@ function SortBy($key, &$table)
     }
 }
 // query to get competitions
-$query = "select * from competitions where IsActive = true;";
+if (isset($_POST["searchButton"])) {
+    $_SESSION['search'] = $_POST['search'];
+}
+$query = "select * from competitions where IsActive = true and Name like '" . $_SESSION['search'] . "%';";
 $result = mysqli_query($connection, $query);
 $competitions = mysqli_fetch_all($result, MYSQLI_ASSOC);
 $comp = GetData();
@@ -145,10 +150,12 @@ if (isset($_POST['logout'])) {
 }
 if (isset($_POST['refresh'])) {
     $_SESSION['error'] = "";
+    $_SESSION['search'] = '';
     Refresh();
 }
 if (isset($_POST['back'])) {
     $_SESSION['error'] = "";
+    $_SESSION['search'] = '';
     header('Location: admin.php');
     exit();
 }
@@ -255,11 +262,19 @@ foreach ($competitions as $c) {
                 </div>
             </form>
         </div>
-        <!-- Athletes table -->
+        <!-- Competitions table -->
         <div class="w-100 mt-3">
             <h4 class="text-center mb-3 text-danger"><?= $_SESSION['error'] ?></h4>
             <h2 class="text-center mb-3">Competitions</h2>
             <form method="POST">
+                <div class="d-flex flex-column align-items-center">
+                    <div class="input-group text-align-center w-25 mb-2">
+                        <label class="form-label fw-semibold m-1">Search by Name: </label>
+                        <input type="text" name="search" class="form-control form-control-sm"
+                            value="<?= $_SESSION['search'] ?>">
+                        <button type='submit' class="btn btn-primary btn-sm " name="searchButton">Search</button>
+                    </div>
+                </div>
                 <table class="table table-bordered text-center">
                     <thead class="table-dark">
                         <tr>

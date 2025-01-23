@@ -5,7 +5,6 @@ session_start();
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $_SESSION['resultId'] = $resultId = $_POST['resultId'] ?? '';
 $_SESSION['error'] = $_SESSION['error'] ?? '';
-
 function GetData()
 {
     $res = [
