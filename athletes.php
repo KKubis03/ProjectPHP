@@ -4,7 +4,7 @@ session_start();
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
 $_SESSION['athleteId'] = $athleteId = $_POST['athleteid'] ?? '';
-
+$_SESSION['search'] = $_POST['search'] ?? $_SESSION['search'];
 // FUNCTIONS
 function GetData()
 {
@@ -136,7 +136,10 @@ function Remove($athleteId, $connection)
 }
 
 // query to get athletes
-$query = "select * from athletes where IsActive = true;";
+if (isset($_POST["searchButton"])) {
+    $_SESSION['search'] = $_POST['search'];
+}
+$query = "select * from athletes where IsActive = true and FirstName like '" . $_SESSION['search'] . "%';";
 $result = mysqli_query($connection, $query);
 $athletes = mysqli_fetch_all($result, MYSQLI_ASSOC);
 $athlete = GetData();
@@ -149,10 +152,12 @@ if (isset($_POST['logout'])) {
 }
 if (isset($_POST['refresh'])) {
     $_SESSION['error'] = "";
+    $_SESSION['search'] = '';
     Refresh();
 }
 if (isset($_POST['back'])) {
     $_SESSION['error'] = "";
+    $_SESSION['search'] = "";
     header('Location: admin.php');
     exit();
 }
@@ -267,8 +272,9 @@ foreach ($athletes as $a) {
                 <div class="d-flex flex-column align-items-center">
                     <div class="input-group text-align-center w-25 mb-2">
                         <label class="form-label fw-semibold m-1">Search by name: </label>
-                        <input type="text" name="search" class="form-control form-control-sm">
-                        <button type='submit' class="btn btn-primary btn-sm " name="search">Search</button>
+                        <input type="text" name="search" class="form-control form-control-sm"
+                            value="<?= $_SESSION['search'] ?>">
+                        <button type='submit' class="btn btn-primary btn-sm " name="searchButton">Search</button>
                     </div>
 
                 </div>
