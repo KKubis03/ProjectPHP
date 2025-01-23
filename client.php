@@ -12,7 +12,7 @@ $athlete = mysqli_fetch_assoc($result);
 $athleteId = $athlete["Id"] ?? '';
 //$_SESSION['athleteId'] = $athleteId;
 // query to get results
-$result2 = mysqli_query($connection, "select* from results where athleteId = '$athleteId' and IsActive = true");
+$result2 = mysqli_query($connection, "select r.* from results r join competitions c on r.CompetitionId = c.Id where r.athleteId = '$athleteId' and r.IsActive order by c.Date;");
 $results = mysqli_fetch_all($result2, MYSQLI_ASSOC); // Fetch all results
 
 // query to get competitionsId's
@@ -194,6 +194,45 @@ $currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
                 </div>
                 <div class="row justify-content-center mt-3">
                     <?php
+                    function IsTimeBetter($time1, $time2)
+                    {
+                        $time1 = explode(':', $time1);
+                        $time2 = explode(':', $time2);
+                        if ($time1[0] < $time2[0])
+                            return false;
+                        else if ($time1[0] > $time2[0])
+                            return true;
+                        else {
+                            if ($time1[1] < $time2[1])
+                                return false;
+                            else if ($time1[1] > $time2[1])
+                                return true;
+                            else {
+                                if ($time1[2] < $time2[2])
+                                    return false;
+                                else if ($time1[2] > $time2[2])
+                                    return true;
+                            }
+                        }
+                    }
+                    function BestTime($results, $distances)
+                    {
+                        $bestTime = '';
+                        $c = 0;
+                        foreach ($results as $r) {
+                            if (in_array($r['CompetitionId'], $distances)) {
+                                $c++;
+                                if ($c == 1) {
+                                    $bestTime = $r['Time'];
+                                } else {
+                                    if (IsTimeBetter($bestTime, $r['Time'])) {
+                                        $bestTime = $r['Time'];
+                                    }
+                                }
+                            }
+                        }
+                        return $bestTime;
+                    }
                     $givenDistancesCompetitionIds = [];
                     foreach ($allCompetitions as $c) {
                         if ($c['Distance'] == $_SESSION['distance']) {
@@ -201,11 +240,38 @@ $currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
                                 array_push($givenDistancesCompetitionIds, $c['Id']);
                         }
                     }
+                    $counter = 0;
+                    $bestTime = BestTime($results, $givenDistancesCompetitionIds);
                     foreach ($results as $r) {
                         if (in_array($r['CompetitionId'], $givenDistancesCompetitionIds)) {
-                            echo '<p class="lead text-center">' . $r['Time'] . '</p>';
+                            $counter++;
+                            if ($r['Time'] == $bestTime) {
+                                $icon = 'crown';
+                                $color = 'gold';
+                                $prevTime = $r['Time'];
+                            } else if ($counter == 1) {
+                                $icon = 'monitoring';
+                                $color = '';
+                                $prevTime = $r['Time'];
+                            } else {
+                                if (IsTimeBetter($prevTime, $r['Time'])) {
+                                    $icon = 'trending_up';
+                                    $color = 'green';
+                                    $prevTime = $r['Time'];
+                                } else if ($r['Time'] == $prevTime) {
+                                    $icon = 'trending_flat';
+                                    $color = 'blue';
+                                    $prevTime = $r['Time'];
+                                } else {
+                                    $icon = 'trending_down';
+                                    $color = 'red';
+                                    $prevTime = $r['Time'];
+                                }
+                            }
+                            echo '<p class="fw-semibold text-center" style="font-size:20px; color:' . $color . ';">' . $counter . '. ' . $r['Time'] . '<span class="material-symbols-outlined" style="font-size:20px;">' . $icon . '</span>' . '</p>';
                         }
                     }
+                    echo '<p class="fw-bold text-center">Best time (PR): ' . '<i style="color:gold;">' . $bestTime . '</i>' . '</p>';
                     ?>
                 </div>
             </div>
