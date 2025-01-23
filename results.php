@@ -96,7 +96,6 @@ function Save($resultId, $connection, &$error)
         $_SESSION['error'] = '';
     } else
         $_SESSION['error'] = "Invalid data cannot save to database";
-
 }
 function Insert($connection, $res)
 {
@@ -162,7 +161,8 @@ if (isset($_POST['cancel'])) {
     $_SESSION['error'] = '';
     Refresh();
 }
-$currentSort = $_POST['sortby'] ?? ''; // value of sortedBy
+// value of sortedBy
+$currentSort = $_POST['sortby'] ?? '';
 if (isset($_POST['sort'])) {
     if (isset($_POST['sortby'])) {
         $currentSort = $_POST['sortby'];
@@ -259,7 +259,7 @@ foreach ($results as $r) {
                 </div>
             </form>
         </div>
-        <!-- Athletes table -->
+        <!-- Results table -->
         <div class="w-100 mt-3">
             <h4 class="text-center mb-3 text-danger"><?= $_SESSION['error'] ?></h4>
             <h2 class="text-center mb-3">Results</h2>

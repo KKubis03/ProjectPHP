@@ -10,11 +10,9 @@ $userId = $_SESSION['athleteId'] ?? '';
 $result = mysqli_query($connection, "select * from athletes where id = '$userId'") or exit("Failed");
 $athlete = mysqli_fetch_assoc($result);
 $athleteId = $athlete["Id"] ?? '';
-//$_SESSION['athleteId'] = $athleteId;
 // query to get results
 $result2 = mysqli_query($connection, "select r.* from results r join competitions c on r.CompetitionId = c.Id where r.athleteId = '$athleteId' and r.IsActive order by c.Date;");
-$results = mysqli_fetch_all($result2, MYSQLI_ASSOC); // Fetch all results
-
+$results = mysqli_fetch_all($result2, MYSQLI_ASSOC);
 // query to get competitionsId's
 $result3 = mysqli_query($connection, "select CompetitionId from results where AthleteId = '$athleteId' and IsActive = true");
 $competitionIds = mysqli_fetch_all($result3);
@@ -96,13 +94,11 @@ function FillTable($competitions, $results)
         echo "</tr>";
     }
 }
-
 if (isset($_POST['logout'])) {
     session_destroy();
     header('Location: main.php');
     exit();
 }
-
 if (isset($_POST['refresh'])) {
     header("Refresh:0");
     exit();
@@ -116,10 +112,9 @@ if (isset($_POST['showtimes'])) {
     $_SESSION['distance'] = $_POST['distance'];
     Refresh();
 }
-
-$currentSort = $_POST['sortby'] ?? 'JD'; // value of sortedBy
+// value of sortedBy
+$currentSort = $_POST['sortby'] ?? 'JD';
 ?>
-
 <!doctype html>
 <html lang="en">
 

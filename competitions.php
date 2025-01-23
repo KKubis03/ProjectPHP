@@ -1,8 +1,8 @@
 <?php
 session_start();
-
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
+// session variables
 $_SESSION['compId'] = $compId = $_POST['compId'] ?? '';
 $search = $_POST['search'] ?? '';
 $_SESSION['search'] = $search ?? $_SESSION['search'];
@@ -19,8 +19,6 @@ function IsFormValid($competition)
         return true;
     else
         return false;
-
-
 }
 // function that returns table of fields ready to save in database
 function GetData()
@@ -62,6 +60,7 @@ function Save($compId, $connection)
     $compExists = mysqli_query($connection, "select * from competitions where Id = '" . $compId . "';");
     $competition = GetData();
     if (IsFormValid($competition)) {
+        $_SESSION['error'] = '';
         if (mysqli_num_rows($compExists) == 0) {
             Insert($connection, $competition);
         } else {
@@ -98,6 +97,7 @@ function Remove($compId, $connection)
     // instead of removing record from database im setting IsActive value = false
     $query = "update competitions set IsActive = false where Id = '$compId'";
     mysqli_query($connection, $query) or exit("failed");
+    $_SESSION['error'] = '';
     Refresh();
 }
 function SortBy($key, &$table)

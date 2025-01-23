@@ -18,7 +18,7 @@ function AddUser($file, $user)
     flock($file, LOCK_EX);
     fputcsv($file, $user, ";");
     flock($file, LOCK_UN);
-
+    $_SESSION['error'] = "";
 }
 if (isset($_POST['login']) && !empty($_POST['login'])) {
     $login = $_POST['login'];
@@ -45,7 +45,6 @@ if (isset($_POST['log'])) {
     exit;
 }
 ?>
-
 <!doctype html>
 <html lang="en">
 

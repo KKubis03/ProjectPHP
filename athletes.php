@@ -1,12 +1,12 @@
 <?php
 session_start();
-
 // database connection
 $connection = mysqli_connect('localhost', 'root', '', 'sportCompetitions');
+// session variables
 $_SESSION['athleteId'] = $athleteId = $_POST['athleteid'] ?? '';
 $search = $_POST['search'] ?? '';
 $_SESSION['search'] = $search ?? $_SESSION['search'];
-// FUNCTIONS
+// function to get data from form
 function GetData()
 {
     $athlete = [
@@ -133,9 +133,9 @@ function Remove($athleteId, $connection)
     // instead of removing record from database im setting IsActive value = false
     $query = "update athletes set IsActive = false where Id = '$athleteId'";
     mysqli_query($connection, $query) or exit("failed");
+    $_SESSION['error'] = '';
     Refresh();
 }
-
 // query to get athletes
 if (isset($_POST["searchButton"])) {
     $_SESSION['search'] = $_POST['search'];
@@ -144,7 +144,6 @@ $query = "select * from athletes where IsActive = true and FirstName like '" . $
 $result = mysqli_query($connection, $query);
 $athletes = mysqli_fetch_all($result, MYSQLI_ASSOC);
 $athlete = GetData();
-
 // BUTTONS HANDLING
 if (isset($_POST['logout'])) {
     session_destroy();
@@ -170,7 +169,8 @@ if (isset($_POST['cancel'])) {
     $_SESSION['error'] = "";
     Refresh();
 }
-$currentSort = $_POST['sortby'] ?? ''; // value of sortedBy
+// value of sortedBy
+$currentSort = $_POST['sortby'] ?? '';
 if (isset($_POST['sort'])) {
     if (isset($_POST['sortby'])) {
         $currentSort = $_POST['sortby'];
