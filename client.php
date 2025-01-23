@@ -178,7 +178,7 @@ $currentSort = $_POST['sortby'] ?? 'JD';
                                 foreach ($distances as $d) {
                                     $selected = $distance === $d ? 'selected' : '';
                                     $_SESSION['distance'] = $distance;
-                                    echo '<option value="' . $d . '" ' . $selected . '>' . $d . ' m' . '</option>';
+                                    echo '<option value="' . $d . '" ' . $selected . '>' . $d . ' km' . '</option>';
                                 }
                                 ?>
                             </select>

@@ -43,7 +43,7 @@ function FillTable($competitions)
         echo "<tr>";
         echo "<td>" . $comp['Id'] . "</td>";
         echo "<td>" . $comp['Name'] . "</td>";
-        echo "<td>" . $comp['Distance'] . " (m)" . "</td>";
+        echo "<td>" . $comp['Distance'] . " " . "</td>";
         echo "<td>" . $comp['Date'] . "</td>";
         echo "<td>" . $comp['Country'] . "</td>";
         echo "<td>" . $comp['City'] . "</td>";
@@ -280,7 +280,7 @@ foreach ($competitions as $c) {
                         <tr>
                             <th scope="col">Id</th>
                             <th scope="col">Name</th>
-                            <th scope="col">Distance</th>
+                            <th scope="col">Distance (km)</th>
                             <th scope="col">Date</th>
                             <th scope="col">Country</th>
                             <th scope="col">City</th>
